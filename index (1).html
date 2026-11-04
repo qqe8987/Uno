@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>اونو</title>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<style>
+:root{--bg:#000;--felt:#141414;--ink:#eee;--r:#d8402f;--y:#f2b705;--g:#2e9e5b;--b:#2a6fc9;--gold:#e2b04a}
+@media (prefers-color-scheme:light){:root{--bg:#f3f1ec;--felt:#e4e0d6;--ink:#161616}}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:Tahoma,"Vazirmatn",system-ui,sans-serif;display:flex;flex-direction:column;min-height:100vh;padding:12px;gap:12px}
+h1{margin:0;font-size:20px;display:flex;justify-content:space-between;align-items:center}
+button,input{font:inherit}
+button{cursor:pointer}
+.new{background:transparent;color:inherit;border:1px solid currentColor;border-radius:8px;padding:4px 12px;margin-right:6px}
+#opp{display:flex;gap:8px}
+.op{flex:1;background:var(--felt);border-radius:10px;padding:8px;text-align:center;font-size:14px;border:2px solid transparent}
+.op.on,.me.on{border-color:var(--gold)}
+.op b{display:block;font-size:22px}
+#mid{flex:1;display:flex;align-items:center;justify-content:center;gap:24px;background:var(--felt);border-radius:14px;padding:16px;min-height:190px}
+.card{width:64px;height:96px;border-radius:9px;border:3px solid #fff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;flex:none;user-select:none;text-shadow:0 1px 2px #0006}
+.card.y{color:#222;text-shadow:none}
+.card.back{background:var(--back) center/cover #14305a;border-color:var(--gold);cursor:pointer}
+.pile{text-align:center;font-size:13px;display:flex;flex-direction:column;gap:4px;align-items:center}
+.hand{display:flex;gap:6px;overflow-x:auto;padding:12px 4px 6px}
+.hand .card{cursor:pointer;transition:transform .12s}
+.hand .card.no{opacity:.45;cursor:default}
+.hand .card.ok:hover{transform:translateY(-10px)}
+.hand .card.last{outline:3px solid var(--gold)}
+#col{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:13px}
+#dot{width:22px;height:22px;border-radius:50%;border:2px solid #fff}
+#msg{min-height:22px;text-align:center;font-size:15px}
+.me{border:2px solid transparent;border-radius:12px;padding:6px}
+.ov{position:fixed;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;z-index:5;color:#fff;font-size:18px;text-align:center;padding:20px}
+.ov[hidden],[hidden]{display:none!important}
+#choices{display:flex;flex-direction:column;gap:12px;align-items:stretch}
+.row{display:flex;gap:8px}
+input{border-radius:10px;border:2px solid var(--gold);background:#111;color:#fff;padding:8px 12px;width:130px;text-align:center;letter-spacing:3px;text-transform:uppercase}
+.pick{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pick button{width:90px;height:90px;border-radius:14px;border:3px solid #fff}
+.big{background:var(--gold);color:#222;border:0;border-radius:10px;padding:10px 24px;font-weight:700}
+h2{margin:0;font-size:32px;color:var(--gold)}
+</style>
+</head>
+<body>
+<h1><span>اونو</span><span><button class="new" id="nb" onclick="start()">بازی جدید</button><button class="new" onclick="location.reload()">منو</button></span></h1>
+<div id="opp"></div>
+<div id="mid"></div>
+<div id="msg"></div>
+<div class="me" id="me"><div class="hand" id="hand"></div></div>
+
+<div class="ov" id="menu"><h2>اونو</h2>
+<div id="choices">
+<button class="big" onclick="startLocal()">بازی با بات‌ها</button>
+<button class="big" onclick="host()">ساخت اتاق آنلاین</button>
+<div class="row"><input id="code" placeholder="کد اتاق" maxlength="5"><button class="big" onclick="join()">ورود</button></div>
+</div>
+<div id="info"></div>
+<button class="big" id="go" hidden onclick="start()">شروع بازی</button></div>
+
+<div class="ov" id="pick" hidden><div>رنگ را انتخاب کن</div>
+<div class="pick">
+<button style="background:var(--r)" onclick="chose('r')"></button>
+<button style="background:var(--y)" onclick="chose('y')"></button>
+<button style="background:var(--g)" onclick="chose('g')"></button>
+<button style="background:var(--b)" onclick="chose('b')"></button></div></div>
+
+<div class="ov" id="end" hidden><div id="endt"></div><button class="big" id="again" onclick="start()">دوباره بازی کن</button></div>
+
+<script>
+const BACK="<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 96'><rect width='64' height='96' fill='#14305a'/><rect x='3.5' y='3.5' width='57' height='89' rx='5' fill='none' stroke='#e2b04a' stroke-width='1.4'/><g transform='translate(32 48)' stroke='#e2b04a' stroke-width='1.3'><ellipse rx='21' ry='36' fill='#0f6e73'/><rect x='-14' y='-14' width='28' height='28' fill='#14305a'/><rect x='-14' y='-14' width='28' height='28' fill='#14305a' transform='rotate(45)'/><circle r='7' fill='#b83227'/><circle r='2.2' fill='#e2b04a' stroke='none'/></g><g fill='#e2b04a'><circle cx='32' cy='10' r='2.4'/><circle cx='32' cy='86' r='2.4'/><circle cx='10' cy='48' r='2'/><circle cx='54' cy='48' r='2'/></g></svg>";
+document.documentElement.style.setProperty('--back','url("data:image/svg+xml,'+encodeURIComponent(BACK)+'")');
+const NAMES=['تو','رضا','سارا','علی'],CN={r:'قرمز',y:'زرد',g:'سبز',b:'آبی'};
+const L={S:'⛔',R:'⇄',D:'+۲',W:'★',F:'+۴'},FA='۰۱۲۳۴۵۶۷۸۹';
+let deck,disc,hands,cur,dir,color,drew,over,winner,msg='',pending,V,timer;
+let net='local',peer,conn,conns={},hum=new Set([0]),names=NAMES.slice(),code='',started=false;
+const $=id=>document.getElementById(id);
+const topCard=()=>disc[disc.length-1];
+const nx=p=>(p+dir+4)%4;
+const ok=(c,t=topCard(),col=color)=>c.c==='w'||c.c===col||c.v===t.v;
+const lab=c=>L[c.v]||FA[+c.v];
+function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}}
+function build(){deck=[];for(const c of'rygb'){for(let n=0;n<=9;n++){deck.push({c,v:''+n});if(n)deck.push({c,v:''+n})}
+for(const v of'SRD'){deck.push({c,v});deck.push({c,v})}}
+for(let i=0;i<4;i++){deck.push({c:'w',v:'W'});deck.push({c:'w',v:'F'})}shuf(deck)}
+function draw(n,p){for(let i=0;i<n;i++){if(!deck.length){const t=disc.pop();deck=disc;shuf(deck);disc=[t]}
+if(!deck.length)break;hands[p].push(deck.pop())}}
+
+/* ---------- موتور بازی (روی دستگاه میزبان) ---------- */
+function start(){build();hands=[[],[],[],[]];for(let p=0;p<4;p++)draw(7,p);
+const k=deck.findIndex(c=>c.c!=='w'&&!isNaN(c.v));disc=deck.splice(k,1);
+color=disc[0].c;cur=0;dir=1;drew=false;over=false;winner=-1;pending=null;started=true;
+names=NAMES.slice();hum=new Set([0]);
+for(const s in conns){hum.add(+s);names[s]='دوست '+FA[s]}
+msg='بازی شروع شد';$('menu').hidden=true;$('end').hidden=true;$('pick').hidden=true;go()}
+function play(p,i,col){const c=hands[p].splice(i,1)[0];disc.push(c);color=col||c.c;
+let t=names[p]+': '+(c.c==='w'?'جوکر، رنگ '+CN[color]:lab(c)+' '+CN[c.c]);
+if(hands[p].length===1)t+=' — اونو!';
+if(!hands[p].length){over=true;winner=p;msg=t;return go()}
+if(c.v==='R')dir=-dir;
+let n=nx(p),skip=false;
+if(c.v==='S')skip=true;
+if(c.v==='D'){draw(2,n);skip=true;t+=' ← '+names[n]+' ۲ کارت می‌گیرد'}
+if(c.v==='F'){draw(4,n);skip=true;t+=' ← '+names[n]+' ۴ کارت می‌گیرد'}
+cur=skip?nx(n):n;msg=t;drew=false;go()}
+function apply(p,t,i,col){if(over||cur!==p)return;const h=hands[p];
+if(t==='play'){const c=h[i];if(!c||!ok(c)||(drew&&i!==h.length-1))return;
+if(c.c==='w'&&!'rygb'.includes(col))return;play(p,i,c.c==='w'?col:null)}
+else if(t==='pile'){
+if(!drew){draw(1,p);const l=h[h.length-1];
+if(l&&ok(l)){drew=true;msg=names[p]+' کارت کشید'}
+else{msg=names[p]+' کارت کشید و رد شد';cur=nx(p)}}
+else{drew=false;msg=names[p]+' رد شد';cur=nx(p)}
+go()}}
+function view(s){return{hand:hands[s],counts:hands.map(h=>h.length),top:topCard(),color,cur,msg,over,winner,drew:drew&&cur===s,me:s,names}}
+function go(){V=view(0);render();
+for(const s in conns){try{conns[s].send({t:'state',v:view(+s)})}catch(e){}}
+clearTimeout(timer);if(!over&&!hum.has(cur))timer=setTimeout(bot,1000)}
+function bot(){if(over)return;const h=hands[cur],p=cur;
+let idx=h.map((c,i)=>i).filter(i=>ok(h[i]));
+if(!idx.length){draw(1,p);const l=h.length-1;
+if(l>=0&&ok(h[l]))idx=[l];else{msg=names[p]+' کارت کشید و رد شد';cur=nx(p);return go()}}
+const plain=idx.filter(i=>h[i].c!=='w'),pool=plain.length?plain:idx,i=pool[Math.random()*pool.length|0];
+let col;if(h[i].c==='w'){const k={r:0,y:0,g:0,b:0};h.forEach(c=>{if(c.c!=='w')k[c.c]++});
+col=Object.keys(k).sort((a,b)=>k[b]-k[a])[0]}
+play(p,i,col)}
+
+/* ---------- ورودی بازیکن ---------- */
+function act(t,i,col){if(net==='client')conn.send({t,i,col});else apply(0,t,i,col)}
+function tap(i){if(!V||V.cur!==V.me||V.over)return;const h=V.hand,c=h[i];
+if(!ok(c,V.top,V.color)||(V.drew&&i!==h.length-1))return;
+if(c.c==='w'){pending=i;$('pick').hidden=false}else act('play',i)}
+function chose(c){$('pick').hidden=true;act('play',pending,c);pending=null}
+function pile(){if(!V||V.cur!==V.me||V.over)return;act('pile')}
+
+/* ---------- نمایش ---------- */
+function cardEl(c,extra,fn){return`<div class="card ${c.c} ${extra||''}" style="background:var(--${c.c})" ${fn?`onclick="${fn}"`:''}>${lab(c)}</div>`}
+function render(){
+$('opp').innerHTML=[1,2,3].map(k=>{const p=(V.me+k)%4;return`<div class="op ${V.cur===p&&!V.over?'on':''}">${V.names[p]}<b>${V.counts[p]}</b>کارت</div>`}).join('');
+$('mid').innerHTML=`<div class="pile"><div class="card back" onclick="pile()"></div>بکش</div>${cardEl(V.top)}<div id="col"><div id="dot" style="background:var(--${V.color})"></div>${CN[V.color]}</div>`;
+$('hand').innerHTML=V.hand.map((c,i)=>cardEl(c,(V.cur===V.me&&ok(c,V.top,V.color)&&!V.over?'ok':'no')+(V.drew&&i===V.hand.length-1?' last':''),`tap(${i})`)).join('');
+$('me').className='me'+(V.cur===V.me&&!V.over?' on':'');
+$('msg').textContent=V.msg;
+$('nb').hidden=net==='client';$('again').hidden=net==='client';
+$('end').hidden=!V.over;
+if(V.over)$('endt').textContent=V.winner===V.me?'🎉 بردی!':V.names[V.winner]+' برد'+(net==='client'?' — منتظر میزبان…':'')}
+
+/* ---------- منو و آنلاین ---------- */
+function info(t){$('choices').hidden=true;$('info').innerHTML=t}
+function err(t){$('choices').hidden=false;$('go').hidden=true;$('info').textContent=t}
+function startLocal(){net='local';start()}
+function lobby(){info(`کد اتاق: <b style="font-size:32px;letter-spacing:4px;color:var(--gold)">${code}</b><br>این کد را به دوستانت بده<br>وصل‌شده‌ها: ${Object.keys(conns).length+1} از ۴ (جاهای خالی را بات پر می‌کند)`);$('go').hidden=false}
+function host(){
+if(typeof Peer==='undefined')return err('برای بازی آنلاین اینترنت لازم است');
+net='host';const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+code=Array.from({length:5},()=>A[Math.random()*A.length|0]).join('');
+info('در حال ساخت اتاق…');
+peer=new Peer('uno-'+code);
+peer.on('open',lobby);
+peer.on('error',e=>{if(e.type==='unavailable-id'){peer.destroy();host()}else err('خطا در ساخت اتاق: '+e.type)});
+peer.on('connection',c=>{
+const s=[1,2,3].find(x=>!conns[x]);
+if(!s||started){c.on('open',()=>{c.send({t:'full'});setTimeout(()=>c.close(),400)});return}
+conns[s]=c;
+c.on('open',()=>{c.send({t:'seat',seat:s});lobby()});
+c.on('data',d=>{if(d&&(d.t==='play'||d.t==='pile'))apply(s,d.t,d.i,d.col)});
+c.on('close',()=>{delete conns[s];hum.delete(s);names[s]=NAMES[s];
+if(started&&!over){msg=NAMES[s]+' (بات) جای بازیکن خارج‌شده آمد';go()}else if(!started)lobby()})})}
+function join(){
+if(typeof Peer==='undefined')return err('برای بازی آنلاین اینترنت لازم است');
+const c=$('code').value.trim().toUpperCase();if(!c)return err('کد اتاق را وارد کن');
+net='client';info('در حال اتصال…');
+peer=new Peer();
+peer.on('error',e=>{net='local';err(e.type==='peer-unavailable'?'اتاقی با این کد پیدا نشد':'خطا در اتصال: '+e.type)});
+peer.on('open',()=>{conn=peer.connect('uno-'+c,{reliable:true});
+conn.on('data',d=>{
+if(d.t==='seat')info('وصل شدی ✅<br>منتظر شروع بازی توسط میزبان…');
+else if(d.t==='full'){net='local';err('اتاق پر است یا بازی شروع شده')}
+else if(d.t==='state'){V=d.v;$('menu').hidden=true;render()}});
+conn.on('close',()=>{net='local';$('menu').hidden=false;$('end').hidden=true;err('ارتباط با میزبان قطع شد')})})}
+</script>
+</body>
+</html>
