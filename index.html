@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<title>اونو</title>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<style>
+:root{--bg:#000;--felt:#141414;--ink:#eee;--r:#d8402f;--y:#f2b705;--g:#2e9e5b;--b:#2a6fc9;--gold:#e2b04a}
+@media (prefers-color-scheme:light){:root{--bg:#f3f1ec;--felt:#e4e0d6;--ink:#161616}}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:Tahoma,"Vazirmatn",system-ui,sans-serif;display:flex;flex-direction:column;min-height:100vh;padding:12px;gap:12px}
+h1{margin:0;font-size:20px;display:flex;justify-content:space-between;align-items:center}
+button,input{font:inherit}
+button{cursor:pointer}
+.new{background:transparent;color:inherit;border:1px solid currentColor;border-radius:8px;padding:4px 12px;margin-right:6px}
+#opp{display:flex;gap:8px}
+.op{flex:1;background:var(--felt);border-radius:10px;padding:8px;text-align:center;font-size:14px;border:2px solid transparent}
+.op.on,.me.on{border-color:var(--gold)}
+.op b{display:block;font-size:22px}
+#mid{flex:1;display:flex;align-items:center;justify-content:center;gap:24px;background:var(--felt);border-radius:14px;padding:16px;min-height:190px}
+.card{width:64px;height:96px;border-radius:9px;border:3px solid #fff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;flex:none;user-select:none;text-shadow:0 1px 2px #0006}
+.card.y{color:#222;text-shadow:none}
+.card.back{background:var(--back) center/cover #14305a;border-color:var(--gold);cursor:pointer}
+.pile{text-align:center;font-size:13px;display:flex;flex-direction:column;gap:4px;align-items:center}
+.hand{display:flex;gap:6px;overflow-x:auto;padding:12px 4px 6px}
+.hand .card{cursor:pointer;transition:transform .12s}
+.hand .card.no{opacity:.45;cursor:default}
+.hand .card.ok:hover{transform:translateY(-10px)}
+.hand .card.last{outline:3px solid var(--gold)}
+#col{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:13px}
+#dot{width:22px;height:22px;border-radius:50%;border:2px solid #fff}
+#msg{min-height:22px;text-align:center;font-size:15px}
+.me{border:2px solid transparent;border-radius:12px;padding:6px}
+.ov{position:fixed;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;z-index:5;color:#fff;font-size:18px;text-align:center;padding:20px}
+.ov[hidden],[hidden]{display:none!important}
+#choices{display:flex;flex-direction:column;gap:12px;align-items:stretch}
+.row{display:flex;gap:8px}
+input{border-radius:10px;border:2px solid var(--gold);background:#111;color:#fff;padding:8px 12px;width:130px;text-align:center;letter-spacing:3px;text-transform:uppercase}
+.pick{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pick button{width:90px;height:90px;border-radius:14px;border:3px solid #fff}
+.big{background:var(--gold);color:#222;border:0;border-radius:10px;padding:10px 24px;font-weight:700}
+h2{margin:0;font-size:32px;color:var(--gold)}
+.emo{justify-content:center;align-items:center}.emo button{font-size:22px;background:var(--felt);border:0;border-radius:10px;padding:4px 8px}#myemo{font-size:30px;min-width:36px}.op .e{display:block;height:22px;font-size:18px}#unob{align-self:center;font-size:20px}
+@property --p{syntax:'<number>';inherits:false;initial-value:0}
+@keyframes tk{from{--p:100}to{--p:0}}
+.av{--p:0;width:46px;height:46px;border-radius:50%;margin:0 auto 4px;display:flex;align-items:center;justify-content:center;background:conic-gradient(var(--gold) calc(var(--p)*1%),#8885 0)}
+.av.tick{animation:tk linear forwards}
+.av span{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px}
+#myav .av{margin:0 0 0 8px}
+</style>
+</head>
+<body>
+<h1><span>اونو</span><span><button class="new" id="nb" onclick="start(1)">بازی جدید</button><button class="new" onclick="location.reload()">منو</button></span></h1>
+<div id="opp"></div>
+<div id="mid"></div>
+<div id="msg"></div><button class="big" id="unob" hidden onclick="act('uno')"></button>
+<div class="me" id="me"><div class="hand" id="hand"></div></div><div class="row emo" id="emo"></div>
+
+<div class="ov" id="menu"><h2>اونو</h2>
+<div id="choices">
+<input id="nm" placeholder="اسمت" maxlength="12" style="letter-spacing:0;text-transform:none;width:100%">
+<button class="big" id="rj" hidden onclick="join(getSess())"></button>
+<button class="big" onclick="startLocal()">بازی با بات‌ها</button>
+<button class="big" onclick="host()">ساخت اتاق آنلاین</button>
+<div class="row"><input id="code" placeholder="کد اتاق" maxlength="5"><button class="big" onclick="join()">ورود</button></div>
+<button class="big" id="inst" hidden onclick="ip.prompt();this.hidden=true">نصب برنامه</button>
+</div>
+<div id="info"></div>
+<button class="big" id="go" hidden onclick="start(1)">شروع بازی</button></div>
+
+<div class="ov" id="pick" hidden><div>رنگ را انتخاب کن</div>
+<div class="pick">
+<button style="background:var(--r)" onclick="chose('r')"></button>
+<button style="background:var(--y)" onclick="chose('y')"></button>
+<button style="background:var(--g)" onclick="chose('g')"></button>
+<button style="background:var(--b)" onclick="chose('b')"></button></div></div>
+
+<div class="ov" id="end" hidden><div id="endt"></div><button class="big" id="again" onclick="next()">دوباره بازی کن</button></div>
+
+<script>
+const BACK="<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 96'><rect width='64' height='96' fill='#14305a'/><rect x='3.5' y='3.5' width='57' height='89' rx='5' fill='none' stroke='#e2b04a' stroke-width='1.4'/><g transform='translate(32 48)' stroke='#e2b04a' stroke-width='1.3'><ellipse rx='21' ry='36' fill='#0f6e73'/><rect x='-14' y='-14' width='28' height='28' fill='#14305a'/><rect x='-14' y='-14' width='28' height='28' fill='#14305a' transform='rotate(45)'/><circle r='7' fill='#b83227'/><circle r='2.2' fill='#e2b04a' stroke='none'/></g><g fill='#e2b04a'><circle cx='32' cy='10' r='2.4'/><circle cx='32' cy='86' r='2.4'/><circle cx='10' cy='48' r='2'/><circle cx='54' cy='48' r='2'/></g></svg>";
+document.documentElement.style.setProperty('--back','url("data:image/svg+xml,'+encodeURIComponent(BACK)+'")');
+const NAMES=['تو','رضا','سارا','علی'],CN={r:'قرمز',y:'زرد',g:'سبز',b:'آبی'};
+const L={S:'⛔',R:'⇄',D:'+۲',W:'★',F:'+۴'},FA='۰۱۲۳۴۵۶۷۸۹';
+let deck,disc,hands,cur,dir,color,drew,over,winner,msg='',pending,V,timer,stack=0,unoP=-1,called=false,scores=[0,0,0,0],pts=0,matchDone=false,sortOn=true,lack=[],dl=0,tmo,lastCur=-1,lastHum=false,tt=1100,pname=['','','',''],tokens=[],ip,emos=['','','',''],et=[];
+const TT=20000,TARGET=200,EM=['😂','👏','😡','😎','🤔','🔥'];
+let net='local',peer,conn,conns={},hum=new Set([0]),names=NAMES.slice(),code='',started=false;
+const $=id=>document.getElementById(id);
+const topCard=()=>disc[disc.length-1];
+const nx=p=>(p+dir+4)%4;
+const ok=(c,t=topCard(),col=color,s=stack)=>s>0?(c.v==='D'||c.v==='F'):(c.c==='w'||c.c===col||c.v===t.v);
+const lab=c=>L[c.v]||FA[+c.v];
+function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}}
+function build(){deck=[];for(const c of'rygb'){for(let n=0;n<=9;n++){deck.push({c,v:''+n});if(n)deck.push({c,v:''+n})}
+for(const v of'SRD'){deck.push({c,v});deck.push({c,v})}}
+for(let i=0;i<4;i++){deck.push({c:'w',v:'W'});deck.push({c:'w',v:'F'})}shuf(deck)}
+function draw(n,p){for(let i=0;i<n;i++){if(!deck.length){const t=disc.pop();deck=disc;shuf(deck);disc=[t]}
+if(!deck.length)break;hands[p].push(deck.pop())}}
+
+/* ---------- موتور بازی (روی دستگاه میزبان) ---------- */
+function start(r){if(r)scores=[0,0,0,0];matchDone=false;stack=0;unoP=-1;lastCur=-1;lack=[0,1,2,3].map(()=>new Set());build();hands=[[],[],[],[]];for(let p=0;p<4;p++)draw(7,p);
+const k=deck.findIndex(c=>c.c!=='w'&&!isNaN(c.v));disc=deck.splice(k,1);
+color=disc[0].c;cur=0;dir=1;drew=false;over=false;winner=-1;pending=null;started=true;
+names=NAMES.slice();names[0]=myName()||NAMES[0];hum=new Set([0]);
+for(const s in conns){hum.add(+s);names[s]=pname[s]||'دوست '+FA[s]}
+msg='بازی شروع شد';$('menu').hidden=true;$('end').hidden=true;$('pick').hidden=true;go()}
+function play(p,i,col){const c=hands[p].splice(i,1)[0];disc.push(c);lack[p].delete(c.c);color=col||c.c;
+let t=names[p]+': '+(c.c==='w'?'جوکر، رنگ '+CN[color]:lab(c)+' '+CN[c.c]);
+if(hands[p].length===1){unoP=p;called=!hum.has(p)&&Math.random()<.8;t+=called?' — اونو!':' — یک کارت مانده'}
+if(!hands[p].length){over=true;winner=p;msg=t;pts=hands.reduce((s,h)=>s+h.reduce((a,c)=>a+(c.c==='w'?50:isNaN(c.v)?20:+c.v),0),0);scores[p]+=pts;matchDone=scores[p]>=TARGET;return go()}
+if(c.v==='R')dir=-dir;
+let n=nx(p),skip=false;
+if(c.v==='S')skip=true;
+if(c.v==='D'||c.v==='F'){stack+=c.v==='D'?2:4;t+=' ← '+names[n]+' باید '+fa(stack)+' کارت بگیرد یا +روی هم بگذارد'}
+
+cur=skip?nx(n):n;msg=t;drew=false;go()}
+function apply(p,t,i,col){if(over||cur!==p)return;const h=hands[p];
+if(t==='play'){const c=h[i];if(!c||!ok(c)||(drew&&i!==h.length-1))return;
+if(c.c==='w'&&!'rygb'.includes(col))return;unoP=-1;play(p,i,c.c==='w'?col:null)}
+else if(t==='pile'){unoP=-1;if(stack>0){draw(stack,p);msg=names[p]+' '+fa(stack)+' کارت گرفت';stack=0;drew=false;cur=nx(p)}
+else if(!drew){lack[p].add(color);draw(1,p);const l=h[h.length-1];
+if(l&&ok(l)){drew=true;msg=names[p]+' کارت کشید'}
+else{msg=names[p]+' کارت کشید و رد شد';cur=nx(p)}}
+else{drew=false;msg=names[p]+' رد شد';cur=nx(p)}
+go()}}
+function view(s){return{hand:hands[s],counts:hands.map(h=>h.length),top:topCard(),color,cur,msg,over,winner,drew:drew&&cur===s,me:s,names,stack,uno:unoP>=0&&!called?unoP:-1,scores,pts,matchDone,target:TARGET,tl:Math.max(0,dl-Date.now()),tt}}
+function go(){const hh=hum.has(cur);if(over){clearTimeout(tmo);lastCur=-1}else if(cur!==lastCur||hh!==lastHum){lastCur=cur;lastHum=hh;clearTimeout(tmo);tt=hh?TT:1100;dl=Date.now()+tt;if(hh)tmo=setTimeout(timeUp,TT)}
+V=view(0);render();
+for(const s in conns){try{conns[s].send({t:'state',v:view(+s)})}catch(e){}}
+clearTimeout(timer);if(!over&&!hum.has(cur))timer=setTimeout(bot,unoP>=0&&!called?1800:1000)}
+function bot(){if(over)return;const h=hands[cur],p=cur,n=nx(p);
+if(unoP>=0&&!called&&unoP!==p&&Math.random()<.6)return callUno(p);unoP=-1;
+let idx=h.map((c,i)=>i).filter(i=>ok(h[i]));
+if(!idx.length){if(stack>0){draw(stack,p);msg=names[p]+' '+fa(stack)+' کارت گرفت';stack=0;cur=nx(p);return go()}
+lack[p].add(color);draw(1,p);const l=h.length-1;
+if(l>=0&&ok(h[l]))idx=[l];else{msg=names[p]+' کارت کشید و رد شد';cur=nx(p);return go()}}
+const cnt={r:0,y:0,g:0,b:0};h.forEach(c=>{if(c.c!=='w')cnt[c.c]++});
+const hot=hands[n].length<=2,allW=idx.every(j=>h[j].c==='w');
+const sc=i=>{const c=h[i];let x=Math.random();
+if(c.c==='w'){x-=hot&&c.v==='F'?-80:50;if(h.length<=2||allW)x+=50}
+else{x+=cnt[c.c]*2+(isNaN(c.v)?(hot?20:4):+c.v*.5)}
+return x};
+let i=idx[0],best=-1e9;for(const j of idx){const v=sc(j);if(v>best){best=v;i=j}}
+let col;if(h[i].c==='w'){const k={r:0,y:0,g:0,b:0};h.forEach((c,j)=>{if(j!==i&&c.c!=='w')k[c.c]+=2});
+for(const x in k)if(lack[n].has(x))k[x]+=3;
+col=Object.keys(k).sort((a,b)=>k[b]-k[a]||Math.random()-.5)[0]}
+play(p,i,col);if(Math.random()<.07)emoAll(p,EM[Math.random()*EM.length|0])}
+
+/* ---------- ورودی بازیکن ---------- */
+function act(t,i,col){if(net==='client')conn.send({t,i,col});else if(t==='uno')callUno(0);else apply(0,t,i,col)}
+function tap(i){if(!V||V.cur!==V.me||V.over)return;const h=V.hand,c=h[i];
+if(!ok(c,V.top,V.color,V.stack)||(V.drew&&i!==h.length-1))return;
+if(c.c==='w'){pending=i;$('pick').hidden=false}else act('play',i)}
+function chose(c){$('pick').hidden=true;act('play',pending,c);pending=null}
+function pile(){if(!V||V.cur!==V.me||V.over)return;act('pile')}
+
+/* ---------- نمایش ---------- */
+function cardEl(c,extra,fn){return`<div class="card ${c.c} ${extra||''}" style="background:var(--${c.c})" ${fn?`onclick="${fn}"`:''}>${lab(c)}</div>`}
+function render(){
+$('opp').innerHTML=[1,2,3].map(k=>{const p=(V.me+k)%4;return`<div class="op ${V.cur===p&&!V.over?'on':''}">${avEl(p)}${esc(V.names[p])}<b>${V.counts[p]}</b>کارت<span class="e">${emos[p]}</span></div>`}).join('');
+$('mid').innerHTML=`<div class="pile"><div class="card back" onclick="pile()"></div>${V.stack>0?'بکش +'+fa(V.stack):'بکش'}</div>${cardEl(V.top)}<div id="col"><div id="dot" style="background:var(--${V.color})"></div>${CN[V.color]}</div>`;
+const ord=V.hand.map((c,i)=>i);if(sortOn)ord.sort((a,b)=>sk(V.hand[a])-sk(V.hand[b]));$('hand').innerHTML=ord.map(i=>{const c=V.hand[i];return cardEl(c,(V.cur===V.me&&ok(c,V.top,V.color,V.stack)&&!V.over?'ok':'no')+(V.drew&&i===V.hand.length-1?' last':''),`tap(${i})`)}).join('');
+$('me').className='me'+(V.cur===V.me&&!V.over?' on':'');
+$('msg').textContent=V.msg;
+$('nb').hidden=net==='client';$('again').hidden=net==='client';
+$('end').hidden=!V.over;
+$('myemo').textContent=emos[V.me];$('myav').innerHTML=avEl(V.me);$('unob').hidden=!(V.uno>=0&&!V.over);if(V.uno>=0)$('unob').textContent=V.uno===V.me?'اونو!':'گرفتمش! ('+V.names[V.uno]+')';
+if(V.over){const sc=V.scores.map((x,i)=>`<div>${esc(V.names[i])}: <b>${fa(x)}</b></div>`).join('');
+$('endt').innerHTML=(V.winner===V.me?'🎉 بردی!':esc(V.names[V.winner])+' برد')+` (+${fa(V.pts)} امتیاز)<div style="font-size:15px;margin:10px 0">${sc}<small>هدف: ${fa(V.target)}</small></div>`+(V.matchDone?`<div>🏆 برندهٔ مسابقه: ${esc(V.names[V.winner])}</div>`:'')+(net==='client'?' — منتظر میزبان…':'');
+$('again').textContent=V.matchDone?'مسابقهٔ جدید':'دست بعد'}}
+
+/* ---------- منو و آنلاین ---------- */
+function info(t){$('choices').hidden=true;$('info').innerHTML=t}
+function err(t){showRj();$('choices').hidden=false;$('go').hidden=true;$('info').textContent=t}
+function startLocal(){net='local';start(1)}
+function lobby(){info(`کد اتاق: <b style="font-size:32px;letter-spacing:4px;color:var(--gold)">${code}</b><br>این کد را به دوستانت بده<br>وصل‌شده‌ها: ${Object.keys(conns).length+1} از ۴ (جاهای خالی را بات پر می‌کند)`);$('go').hidden=false}
+function host(){
+if(typeof Peer==='undefined')return err('برای بازی آنلاین اینترنت لازم است');
+net='host';const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+code=Array.from({length:5},()=>A[Math.random()*A.length|0]).join('');
+info('در حال ساخت اتاق…');
+peer=new Peer('uno-'+code);
+peer.on('open',lobby);
+peer.on('error',e=>{if(e.type==='unavailable-id'){peer.destroy();host()}else err('خطا در ساخت اتاق: '+e.type)});
+peer.on('connection',c=>{let s=0;
+const full=()=>{c.send({t:'full'});setTimeout(()=>c.close(),400)};
+c.on('data',d=>{if(!d)return;
+if(!s){
+if(d.t==='rejoin'){const q=+d.seat;
+if(started&&q>=1&&q<=3&&tokens[q]&&tokens[q]===d.token){const o=conns[q];if(o){delete conns[q];try{o.close()}catch(e){}}
+s=q;pname[s]=nm(d.n);conns[s]=c;c.send({t:'seat',seat:s,token:tokens[s]});hum.add(s);names[s]=pname[s]||'دوست '+FA[s];msg=names[s]+' برگشت';go()}
+else full()}
+else if(d.t==='hello'){const f=[1,2,3].find(x=>!conns[x]);
+if(!f||started)full();
+else{s=f;pname[s]=nm(d.n);tokens[s]=Math.random().toString(36).slice(2);conns[s]=c;c.send({t:'seat',seat:s,token:tokens[s]});lobby()}}
+return}
+if(d.t==='play'||d.t==='pile')apply(s,d.t,d.i,d.col);else if(d.t==='uno')callUno(s);else if(d.t==='emo')emoAll(s,d.e)});
+c.on('close',()=>{if(!s||conns[s]!==c)return;delete conns[s];hum.delete(s);names[s]=NAMES[s];
+if(started&&!over){msg=NAMES[s]+' (بات) جای بازیکن خارج‌شده آمد';go()}else if(!started)lobby()})})}
+function getSess(){try{return JSON.parse(localStorage.getItem('uno-sess'))}catch(e){return null}}
+function showRj(){const q=getSess();$('rj').hidden=!q;if(q)$('rj').textContent='بازگشت به اتاق '+q.code}
+function join(ss){
+if(typeof Peer==='undefined')return err('برای بازی آنلاین اینترنت لازم است');
+const c=ss?ss.code:$('code').value.trim().toUpperCase();if(!c)return err('کد اتاق را وارد کن');
+try{peer&&peer.destroy()}catch(e){}
+net='client';info('در حال اتصال…');
+peer=new Peer();
+peer.on('error',e=>{net='local';if(e.type==='peer-unavailable'){try{localStorage.removeItem('uno-sess')}catch(x){}}err(e.type==='peer-unavailable'?'اتاقی با این کد پیدا نشد':'خطا در اتصال: '+e.type)});
+peer.on('open',()=>{conn=peer.connect('uno-'+c,{reliable:true});
+conn.on('open',()=>conn.send(ss?{t:'rejoin',seat:ss.seat,token:ss.token,n:myName()}:{t:'hello',n:myName()}));
+conn.on('data',d=>{
+if(d.t==='seat'){try{localStorage.setItem('uno-sess',JSON.stringify({code:c,seat:d.seat,token:d.token}))}catch(e){}info('وصل شدی ✅<br>منتظر شروع بازی توسط میزبان…')}
+else if(d.t==='full'){try{localStorage.removeItem('uno-sess')}catch(e){}net='local';err('اتاق پر است یا بازی شروع شده')}
+else if(d.t==='emo')showEmo(d.s,d.e);
+else if(d.t==='state'){V=d.v;dl=Date.now()+V.tl;$('menu').hidden=true;render()}});
+conn.on('close',()=>{net='local';$('menu').hidden=false;$('end').hidden=true;err('ارتباط با میزبان قطع شد');
+if(getSess())setTimeout(()=>{if(net==='local'&&getSess())join(getSess())},1500)})})}
+
+const esc=x=>String(x).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+const nm=x=>String(x||'').trim().slice(0,12),myName=()=>nm($('nm').value);
+function avEl(p){const on=V.cur===p&&!V.over,rem=Math.max(0,dl-Date.now());
+return`<div class="av${on?' tick':''}" ${on?`style="animation-duration:${V.tt}ms;animation-delay:${rem-V.tt}ms"`:''}><span style="background:hsl(${p*80+10} 50% 38%)">${esc([...V.names[p]][0]||'?')}</span></div>`}
+function timeUp(){if(over||!hum.has(cur))return;const p=cur;apply(p,'pile');if(!over&&cur===p&&hum.has(p))apply(p,'pile')}
+const fa=n=>String(n).replace(/\d/g,d=>FA[d]);
+const sk=c=>'rygbw'.indexOf(c.c)*20+({S:10,R:11,D:12,W:13,F:14}[c.v]??+c.v);
+function next(){start(matchDone)}
+function callUno(s){if(over||unoP<0||called)return;
+if(s===unoP){called=true;msg=names[s]+': اونو!'}
+else{draw(2,unoP);msg=names[s]+' '+names[unoP]+' را گرفت — ۲ کارت جریمه';unoP=-1}go()}
+function showEmo(s,e){emos[s]=e;if(V)render();clearTimeout(et[s]);et[s]=setTimeout(()=>{emos[s]='';if(V)render()},2500)}
+function emoAll(s,e){if(!EM.includes(e))return;showEmo(s,e);for(const k in conns){try{conns[k].send({t:'emo',s,e})}catch(x){}}}
+function react(e){if(net==='client')conn.send({t:'emo',e});else emoAll(0,e)}
+$('emo').innerHTML='<span id="myav"></span>'+EM.map(e=>`<button onclick="react('${e}')">${e}</button>`).join('')+'<button onclick="sortOn=!sortOn;render()">🎨</button><span id="myemo"></span>';
+try{$('nm').value=localStorage.getItem('uno-name')||''}catch(e){}
+$('nm').oninput=()=>{try{localStorage.setItem('uno-name',$('nm').value)}catch(e){}};
+showRj();
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();ip=e;$('inst').hidden=false});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
