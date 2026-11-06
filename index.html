@@ -77,12 +77,27 @@ html,body{overflow-x:hidden}
 .av{position:relative}
 .bub{position:absolute;inset:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-style:normal;animation:pp .25s}
 @keyframes pp{from{transform:scale(.3)}}
+.card{position:relative}
+.cn{display:none;position:absolute;top:3px;right:5px;font-size:13px;font-style:normal;line-height:1}
+.hand .cn{display:block}
+.hand{flex-direction:column;overflow:visible;gap:2px;padding:14px 4px 6px}
+.hrow{display:flex;justify-content:center}
+.hand .card.ok{transform:translateY(-8px)}
+@keyframes pu{50%{transform:scale(1.1)}}
+#unob.on{animation:pu .6s infinite}
+#gen{z-index:30;background:#15130f;justify-content:flex-start;overflow:auto;padding:20px 12px}
+#gb{width:100%;max-width:360px;text-align:right;font-size:15px;line-height:1.8}
+#gb h3{margin:14px 0 4px;color:var(--gold);font-size:16px}
+.rr{display:flex;gap:10px;align-items:center;margin:6px 0}.rr .card{width:40px;height:58px;font-size:16px;flex:none}
+.srow{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:6px 0;flex-wrap:wrap}
+.new.sel{background:var(--gold);color:#1a1a1a}
+.stg{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stg div{background:#ffffff14;border-radius:10px;padding:8px;text-align:center;font-size:13px}.stg b{display:block;font-size:24px;color:var(--gold)}
 </style>
 </head>
 <body>
-<h1><span>اونو</span><span><button class="new" id="nb" onclick="start(1)">بازی جدید</button><button class="new" onclick="$('rules').hidden=false">قوانین</button><button class="new" onclick="location.reload()">منو</button></span></h1>
+<h1><span>اونو</span><span><button class="new" id="nb" onclick="newGame()">بازی جدید</button><button class="new" onclick="showRules()">📖</button><button class="new" onclick="showStats()">📊</button><button class="new" onclick="showSet()">⚙️</button><button class="new" onclick="location.reload()">منو</button></span></h1>
 <div id="board"><div id="otop"></div><div id="oleft"></div><div id="mid"></div><div id="oright"></div></div>
-<div id="msg"></div><button class="big" id="unob" hidden onclick="act('uno')"></button>
+<div id="msg"></div><button class="big" id="unob" style="visibility:hidden" onclick="act('uno')">اونو!</button>
 <div class="me" id="me"><div class="hand" id="hand"></div></div><div class="row emo" id="emo"></div>
 
 <div class="ov" id="menu"><h2>اونو</h2>
@@ -90,10 +105,12 @@ html,body{overflow-x:hidden}
 <input id="nm" placeholder="اسمت" maxlength="12" style="letter-spacing:0;text-transform:none;width:100%">
 <button class="big" id="rj" hidden onclick="join(getSess())"></button>
 <button class="big" id="invb" hidden onclick="join(getSess()&&getSess().code===$('code').value?getSess():undefined)">ورود به بازی</button>
+<div class="row" style="justify-content:center;gap:8px"><button class="new" onclick="showRules()">📖 قوانین</button><button class="new" onclick="showStats()">📊 آمار</button><button class="new" onclick="showSet()">⚙️ تنظیمات</button></div>
 <label>تعداد بازیکن: <select id="np" style="font:inherit;padding:4px 8px;border-radius:8px"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select></label>
 <button class="big" onclick="startLocal()">بازی با بات‌ها</button>
 <button class="big" onclick="host()">ساخت اتاق آنلاین</button>
 <div class="row"><input id="code" placeholder="کد اتاق" maxlength="5"><button class="big" onclick="join()">ورود</button></div>
+<button class="new" id="rb" onclick="$('rules').hidden=false">قوانین بازی</button>
 <button class="big" id="inst" hidden onclick="ip.prompt();this.hidden=true">نصب برنامه</button>
 </div>
 <div id="info"></div>
@@ -106,16 +123,17 @@ html,body{overflow-x:hidden}
 <button style="background:var(--g)" onclick="chose('g')"></button>
 <button style="background:var(--b)" onclick="chose('b')"></button></div></div>
 
-<div class="ov" id="rules" hidden><h2>قوانین</h2><div style="text-align:right;font-size:15px;line-height:1.9;max-width:340px">• کارتت باید هم‌رنگ یا هم‌عدد/نماد کارت وسط باشه (جوکر همیشه قابل بازیه).<br>• ⛔ نفر بعدی رد می‌شه. ⇄ جهت برعکس می‌شه (در ۲ نفره مثل رد کردنه).<br>• +۲ و +۴ جمع می‌شن: نفر بعدی یا +۲/+۴ می‌ذاره روش یا همه رو می‌گیره.<br>• کارت نداری یا نمی‌خوای؟ از دسته بکش؛ کارت کشیده‌شده اگه بخوره می‌تونی بذاریش.<br>• وقتی یک کارت مونده «اونو!» بزن؛ بقیه می‌تونن «گرفتمش!» بزنن تا ۲ کارت جریمه بشه.<br>• ۲۰ ثانیه وقت داری وگرنه خودکار کارت می‌کشی.<br>• امتیاز: عدد = خودش، نمادها ۲۰، جوکرها ۵۰. اولین نفری که به ۲۰۰ برسه می‌بره.</div><button class="big" onclick="this.parentNode.hidden=true">فهمیدم</button></div>
-<div class="ov" id="end" hidden><div id="endt"></div><button class="big" id="again" onclick="next()">دوباره بازی کن</button></div>
+<div class="ov" id="gen" hidden><h2 id="gt"></h2><div id="gb"></div><button class="big" onclick="$('gen').hidden=true">بستن</button></div>
+<div class="ov" id="end" hidden><div id="endt"></div><button class="big" id="again" onclick="next()">شروع دست بعد</button><div class="row" id="cl" hidden><button class="big" id="rdy" onclick="act('ready')">✅ آماده‌ام</button><button class="new" id="lv" onclick="leaveRoom()">🚪 خروج</button></div></div>
 
 <script>
 const BACK="<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 96'><rect width='64' height='96' fill='#14305a'/><rect x='3.5' y='3.5' width='57' height='89' rx='5' fill='none' stroke='#e2b04a' stroke-width='1.4'/><g transform='translate(32 48)' stroke='#e2b04a' stroke-width='1.3'><ellipse rx='21' ry='36' fill='#0f6e73'/><rect x='-14' y='-14' width='28' height='28' fill='#14305a'/><rect x='-14' y='-14' width='28' height='28' fill='#14305a' transform='rotate(45)'/><circle r='7' fill='#b83227'/><circle r='2.2' fill='#e2b04a' stroke='none'/></g><g fill='#e2b04a'><circle cx='32' cy='10' r='2.4'/><circle cx='32' cy='86' r='2.4'/><circle cx='10' cy='48' r='2'/><circle cx='54' cy='48' r='2'/></g></svg>";
 document.documentElement.style.setProperty('--back','url("data:image/svg+xml,'+encodeURIComponent(BACK)+'")');
 const NAMES=['تو','رضا','سارا','علی','مریم','حسین'],CN={r:'قرمز',y:'زرد',g:'سبز',b:'آبی'};
 const L={S:'⛔',R:'⇄',D:'+۲',W:'★',F:'+۴'},FA='۰۱۲۳۴۵۶۷۸۹';
-let deck,disc,hands,cur,dir,color,drew,over,winner,msg='',pending,V,timer,stack=0,unoP=-1,called=false,scores=[0,0,0,0],pts=0,matchDone=false,sortOn=true,N=4,hist=[],lastMsg='',pv=null,fl={},histOn=false,lack=[],dl=0,tmo,lastCur=-1,lastHum=false,tt=1100,pname=[],tokens=[],ip,emos=['','','','','',''],et=[];
-const ICE=[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'}/*,{urls:'turn:YOUR_TURN_HOST:3478',username:'USER',credential:'PASS'}*/],TT=20000,TARGET=200,EM=['😂','👏','😡','😎','🤔','🔥'];
+let deck,disc,hands,cur,dir,color,drew,over,winner,msg='',pending,V,timer,stack=0,unoP=-1,called=false,scores=[0,0,0,0],pts=0,matchDone=false,sortOn=true,ready=[],pre=-1,N=4,hist=[],lastMsg='',pv=null,fl={},histOn=false,lack=[],dl=0,tmo,lastCur=-1,lastHum=false,tt=1100,pname=[],tokens=[],ip,emos=['','','','','',''],et=[];
+let TT=20000,TARGET=200,BOTS=1;
+const SIGNAL={},ICE=[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'}/*,{urls:'turn:YOUR_TURN_HOST:3478',username:'USER',credential:'PASS'}*/],EM=['😂','👏','😡','😎','🤔','🔥'];
 let net='local',peer,conn,conns={},hum=new Set([0]),names=NAMES.slice(),code='',started=false;
 const $=id=>document.getElementById(id);
 const topCard=()=>disc[disc.length-1];
@@ -130,7 +148,7 @@ function draw(n,p){for(let i=0;i<n;i++){if(!deck.length){const t=disc.pop();deck
 if(!deck.length)break;hands[p].push(deck.pop())}}
 
 /* ---------- موتور بازی (روی دستگاه میزبان) ---------- */
-function start(r){if(r||scores.length!==N)scores=Array(N).fill(0);matchDone=false;stack=0;unoP=-1;lastCur=-1;hist=[];lastMsg='';pv=null;lack=Array.from({length:N},()=>new Set());build();hands=Array.from({length:N},()=>[]);for(let p=0;p<N;p++)draw(7,p);
+function start(r){if(r||scores.length!==N)scores=Array(N).fill(0);matchDone=false;stack=0;unoP=-1;pre=-1;ready=[];lastCur=-1;hist=[];lastMsg='';pv=null;lack=Array.from({length:N},()=>new Set());build();hands=Array.from({length:N},()=>[]);for(let p=0;p<N;p++)draw(7,p);
 const k=deck.findIndex(c=>c.c!=='w'&&!isNaN(c.v));disc=deck.splice(k,1);
 color=disc[0].c;cur=0;dir=1;drew=false;over=false;winner=-1;pending=null;started=true;
 names=NAMES.slice();names[0]=myName()||NAMES[0];hum=new Set([0]);
@@ -138,7 +156,7 @@ for(const s in conns){hum.add(+s);names[s]=pname[s]||'دوست '+FA[s]}
 msg='بازی شروع شد';$('menu').hidden=true;$('end').hidden=true;$('pick').hidden=true;go()}
 function play(p,i,col){const c=hands[p].splice(i,1)[0];disc.push(c);lack[p].delete(c.c);color=col||c.c;
 let t=names[p]+': '+(c.c==='w'?'جوکر، رنگ '+CN[color]:lab(c)+' '+CN[c.c]);
-if(hands[p].length===1){unoP=p;called=!hum.has(p)&&Math.random()<.8;t+=called?' — اونو!':' — یک کارت مانده'}
+if(hands[p].length===1){unoP=p;called=(!hum.has(p)&&Math.random()<.8)||pre===p;pre=-1;t+=called?' — اونو!':' — یک کارت مانده'}
 if(!hands[p].length){over=true;winner=p;msg=t;pts=hands.reduce((s,h)=>s+h.reduce((a,c)=>a+(c.c==='w'?50:isNaN(c.v)?20:+c.v),0),0);scores[p]+=pts;matchDone=scores[p]>=TARGET;return go()}
 if(c.v==='R')dir=-dir;
 let n=nx(p),skip=false;
@@ -149,17 +167,17 @@ cur=skip?nx(n):n;msg=t;drew=false;go()}
 function apply(p,t,i,col){if(over||cur!==p)return;const h=hands[p];
 if(t==='play'){const c=h[i];if(!c||!ok(c)||(drew&&i!==h.length-1))return;
 if(c.c==='w'&&!'rygb'.includes(col))return;unoP=-1;play(p,i,c.c==='w'?col:null)}
-else if(t==='pile'){unoP=-1;if(stack>0){draw(stack,p);msg=names[p]+' '+fa(stack)+' کارت گرفت';stack=0;drew=false;cur=nx(p)}
+else if(t==='pile'){unoP=-1;pre=-1;if(stack>0){draw(stack,p);msg=names[p]+' '+fa(stack)+' کارت گرفت';stack=0;drew=false;cur=nx(p)}
 else if(!drew){lack[p].add(color);draw(1,p);const l=h[h.length-1];
 if(l&&ok(l)){drew=true;msg=names[p]+' کارت کشید'}
 else{msg=names[p]+' کارت کشید و رد شد';cur=nx(p)}}
 else{drew=false;msg=names[p]+' رد شد';cur=nx(p)}
 go()}}
-function view(s){return{hand:hands[s],counts:hands.map(h=>h.length),top:topCard(),color,cur,msg,over,winner,drew:drew&&cur===s,me:s,names,stack,uno:unoP>=0&&!called?unoP:-1,scores,pts,matchDone,target:TARGET,n:N,dir,hist,dn:disc.length,tl:Math.max(0,dl-Date.now()),tt}}
-function go(){if(msg!==lastMsg){hist.unshift(msg);hist.length=Math.min(hist.length,8);lastMsg=msg}const hh=hum.has(cur);if(over){clearTimeout(tmo);lastCur=-1}else if(cur!==lastCur||hh!==lastHum){lastCur=cur;lastHum=hh;clearTimeout(tmo);tt=hh?TT:1100;dl=Date.now()+tt;if(hh)tmo=setTimeout(timeUp,TT)}
+function view(s){return{hand:hands[s],counts:hands.map(h=>h.length),top:topCard(),color,cur,msg,over,winner,drew:drew&&cur===s,me:s,names,stack,uno:unoP>=0&&!called?unoP:-1,scores,pts,matchDone,target:TARGET,cfg:{tt:TT/1000,target:TARGET,bots:BOTS},st:Array.from({length:N},(_,i)=>i===0?'h':hum.has(i)?(ready[i]?'r':'w'):'b'),n:N,dir,hist,dn:disc.length,tl:Math.max(0,dl-Date.now()),tt,pre:pre===s}}
+function go(){if(msg!==lastMsg){hist.unshift(msg);hist.length=Math.min(hist.length,8);lastMsg=msg}const hh=hum.has(cur);if(over){clearTimeout(tmo);lastCur=-1}else if(cur!==lastCur||hh!==lastHum){lastCur=cur;lastHum=hh;clearTimeout(tmo);tt=hh?TT:Math.round(1100*BOTS);dl=Date.now()+tt;if(hh)tmo=setTimeout(timeUp,TT)}
 V=view(0);render();
 for(const s in conns){try{conns[s].send({t:'state',v:view(+s)})}catch(e){}}
-clearTimeout(timer);if(!over&&!hum.has(cur))timer=setTimeout(bot,unoP>=0&&!called?1800:1000)}
+clearTimeout(timer);if(!over&&!hum.has(cur))timer=setTimeout(bot,unoP>=0&&!called?(hum.has(unoP)?3500:2500):Math.round(1000*BOTS))}
 function bot(){if(over)return;const h=hands[cur],p=cur,n=nx(p);
 if(unoP>=0&&!called&&unoP!==p&&Math.random()<.6)return callUno(p);unoP=-1;
 let idx=h.map((c,i)=>i).filter(i=>ok(h[i]));
@@ -187,21 +205,28 @@ function chose(c){$('pick').hidden=true;act('play',pending,c);pending=null}
 function pile(){if(!V||V.cur!==V.me||V.over)return;act('pile')}
 
 /* ---------- نمایش ---------- */
-function cardEl(c,extra,fn){return`<div class="card ${c.c} ${extra||''}" style="background:var(--${c.c})" ${fn?`onclick="${fn}"`:''}>${lab(c)}</div>`}
+function cardEl(c,extra,fn,st){return`<div class="card ${c.c} ${extra||''}" style="background:var(--${c.c});${st||''}" ${fn?`onclick="${fn}"`:''}><i class="cn">${lab(c)}</i>${lab(c)}</div>`}
 function render0(){
 const SD={2:['t'],3:['l','r'],4:['l','t','r'],5:['l','t','t','r'],6:['l','t','t','t','r']}[V.n],o={l:'',t:'',r:''};
 for(let k=1;k<V.n;k++){const p=(V.me+k)%V.n;o[SD[k-1]]+=`<div class="op ${V.cur===p&&!V.over?'on':''}">${avEl(p)}<span class="nmx">${esc(V.names[p])}</span><b>${V.counts[p]}</b>کارت</div>`}
 $('oleft').innerHTML=o.l;$('otop').innerHTML=o.t;$('oright').innerHTML=o.r;
 $('mid').innerHTML=`<div class="pile"><div class="card back" onclick="pile()"></div>${V.stack>0?'بکش +'+fa(V.stack):'بکش'}</div>${cardEl(V.top,fl.fly)}<div id="col"><div id="dot" style="background:var(--${V.color})"></div>${CN[V.color]}<span>${V.dir>0?'↺':'↻'}</span></div>`;
-const ord=V.hand.map((c,i)=>i);if(sortOn)ord.sort((a,b)=>sk(V.hand[a])-sk(V.hand[b]));$('hand').innerHTML=ord.map(i=>{const c=V.hand[i];return cardEl(c,(V.cur===V.me&&ok(c,V.top,V.color,V.stack)&&!V.over?'ok':'no')+(V.drew&&i===V.hand.length-1?' last':'')+(fl.deal!=null&&i>=fl.deal?' dl':''),`tap(${i})`)}).join('');
+const ord=V.hand.map((c,i)=>i);if(sortOn)ord.sort((a,b)=>sk(V.hand[a])-sk(V.hand[b]));
+const W=Math.max(200,($('hand').clientWidth||340)-8),R=Math.min(3,Math.ceil(ord.length/9)),per=Math.ceil(ord.length/R)||1;let hh='';
+for(let r=0;r<R;r++){const part=ord.slice(r*per,(r+1)*per),st=part.length>1?Math.min(70,(W-64)/(part.length-1)):0;
+hh+='<div class="hrow">'+part.map((i,j)=>{const c=V.hand[i];return cardEl(c,(V.cur===V.me&&ok(c,V.top,V.color,V.stack)&&!V.over?'ok':'no')+(V.drew&&i===V.hand.length-1?' last':'')+(fl.deal!=null&&i>=fl.deal?' dl':''),`tap(${i})`,j?`margin-inline-start:${st-64}px`:'')}).join('')+'</div>'}
+$('hand').innerHTML=hh;
 $('me').className='me'+(V.cur===V.me&&!V.over?' on':'');
 $('msg').textContent=histOn?V.hist.join('\n'):V.msg;
 $('nb').hidden=net==='client';$('again').hidden=net==='client';
 $('end').hidden=!V.over;
-$('myav').innerHTML=avEl(V.me);$('unob').hidden=!(V.uno>=0&&!V.over);if(V.uno>=0)$('unob').textContent=V.uno===V.me?'اونو!':'گرفتمش! ('+V.names[V.uno]+')';
+$('myav').innerHTML=avEl(V.me);$('nb').hidden=net==='client';const pre2=V.cur===V.me&&V.hand.length===2&&!V.pre&&!V.over,showU=(V.uno>=0&&!V.over)||pre2;$('unob').style.visibility=showU?'visible':'hidden';$('unob').className='big'+(showU?' on':'');if(showU)$('unob').textContent=(V.uno===V.me||(pre2&&V.uno<0))?'اونو!':'گرفتمش! ('+V.names[V.uno]+')';
 if(V.over){const sc=V.scores.map((x,i)=>`<div>${esc(V.names[i])}: <b>${fa(x)}</b></div>`).join('');
 $('endt').innerHTML=(V.winner===V.me?'🎉 بردی!':esc(V.names[V.winner])+' برد')+` (+${fa(V.pts)} امتیاز)<div style="font-size:15px;margin:10px 0">${sc}<small>هدف: ${fa(V.target)}</small></div>`+(V.matchDone?`<div>🏆 برندهٔ مسابقه: ${esc(V.names[V.winner])}</div>`:'')+(net==='client'?' — منتظر میزبان…':'');
-$('again').textContent=V.matchDone?'مسابقهٔ جدید':'دست بعد'}}
+$('again').textContent=V.matchDone?'شروع مسابقهٔ جدید':'شروع دست بعد';
+if(net!=='local'){const m2={h:'👑 میزبان',r:'✅ آماده',w:'⏳ منتظر',b:'🤖 بات'};$('endt').innerHTML+='<div style="font-size:14px;margin:8px 0">'+V.st.map((x,i)=>`<div>${esc(V.names[i])}: ${m2[x]}</div>`).join('')+'</div>'}
+$('again').hidden=net==='client';$('cl').hidden=net!=='client';$('rdy').hidden=!(net==='client'&&V.st[V.me]!=='r');
+if(net==='client')$('endt').innerHTML+='<div>'+(V.st[V.me]==='r'?'✅ آماده‌ای — منتظر تأیید میزبان…':'منتظر تأیید میزبان برای شروع…')+'</div>'}}
 
 /* ---------- منو و آنلاین ---------- */
 function info(t){$('choices').hidden=true;$('info').innerHTML=t}
@@ -215,15 +240,17 @@ info(h);$('go').hidden=false}
 function invite(sh){const u=link();
 if(sh&&navigator.share)return navigator.share({title:'اونو',text:'بیا اونو بازی کنیم!',url:u}).catch(()=>{});
 if(navigator.clipboard)navigator.clipboard.writeText(u).then(()=>alert('لینک دعوت کپی شد'),()=>prompt('لینک را کپی کن',u));else prompt('لینک را کپی کن',u)}
-function kick(s){const c=conns[s];if(!c)return;try{c.send({t:'kick'})}catch(e){}setTimeout(()=>c.close(),300);delete conns[s];delete tokens[s];pname[s]='';lobby()}
+function kick(s){const c=conns[s];if(!c)return;try{c.send({t:'kick'})}catch(e){}setTimeout(()=>c.close(),300);dropSeat(s)}
+function dropSeat(s){delete conns[s];hum.delete(s);delete tokens[s];pname[s]='';ready[s]=false;names[s]=NAMES[s];if(started){msg=NAMES[s]+' (بات) جای بازیکن خارج‌شده آمد';go()}else lobby()}
 function host(){
-if(typeof Peer==='undefined')return needPeer(host);
+if(typeof mqtt==='undefined')return needPeer(host);
 net='host';N=+$('np').value;const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 code=Array.from({length:5},()=>A[Math.random()*A.length|0]).join('');
 info('در حال ساخت اتاق…');
-peer=new Peer('uno-'+code,{config:{iceServers:ICE}});
-peer.on('open',lobby);
-peer.on('error',e=>{if(e.type==='unavailable-id'){peer.destroy();host()}else err('خطا در ساخت اتاق: '+e.type)});
+peer=new Peer('uno-'+code,{...SIGNAL,config:{iceServers:ICE}});
+const to=setTimeout(()=>{if(!peer.open){try{peer.destroy()}catch(e){}net='local';err('اتصال به سرور واسط (PeerJS) برقرار نشد. اینترنت یا فیلترینگ را بررسی کن.')}},22000);
+peer.on('open',()=>{clearTimeout(to);lobby()});
+peer.on('error',e=>{clearTimeout(to);if(e.type==='unavailable-id'){peer.destroy();host()}else err('خطا در ساخت اتاق: '+e.type)});
 peer.on('connection',c=>{let s=0;
 const full=()=>{c.send({t:'full'});setTimeout(()=>c.close(),400)};
 c.on('data',d=>{if(!d)return;
@@ -236,20 +263,22 @@ else if(d.t==='hello'){const f=[1,2,3,4,5].filter(x=>x<N).find(x=>!conns[x]);
 if(!f||started)full();
 else{s=f;pname[s]=nm(d.n);tokens[s]=Math.random().toString(36).slice(2);conns[s]=c;c.send({t:'seat',seat:s,token:tokens[s]});lobby()}}
 return}
-if(d.t==='play'||d.t==='pile')apply(s,d.t,d.i,d.col);else if(d.t==='uno')callUno(s);else if(d.t==='emo')emoAll(s,d.e)});
+if(d.t==='play'||d.t==='pile')apply(s,d.t,d.i,d.col);else if(d.t==='uno')callUno(s);else if(d.t==='emo')emoAll(s,d.e);else if(d.t==='ready'&&over){ready[s]=true;go()}else if(d.t==='leave')dropSeat(s)});
 c.on('close',()=>{if(!s||conns[s]!==c)return;delete conns[s];hum.delete(s);names[s]=NAMES[s];
-if(started&&!over){msg=NAMES[s]+' (بات) جای بازیکن خارج‌شده آمد';go()}else if(!started)lobby()})})}
+if(started&&!over){msg=NAMES[s]+' (بات) جای بازیکن خارج‌شده آمد';go()}else if(!started)lobby();if(started&&over)go()})})}
 function getSess(){try{return JSON.parse(localStorage.getItem('uno-sess'))}catch(e){return null}}
 function showRj(){const q=getSess();$('rj').hidden=!q;if(q)$('rj').textContent='بازگشت به اتاق '+q.code}
 function join(ss){
-if(typeof Peer==='undefined')return needPeer(()=>join(ss));
+if(typeof mqtt==='undefined')return needPeer(()=>join(ss));
 const c=ss?ss.code:$('code').value.trim().toUpperCase();if(!c)return err('کد اتاق را وارد کن');
 try{peer&&peer.destroy()}catch(e){}
 net='client';info('در حال اتصال…');
-peer=new Peer(undefined,{config:{iceServers:ICE}});
+peer=new Peer(undefined,{...SIGNAL,config:{iceServers:ICE}});
+const to=setTimeout(()=>{if(!peer.open){try{peer.destroy()}catch(e){}net='local';err('اتصال به سرور واسط (PeerJS) برقرار نشد. اینترنت یا فیلترینگ را بررسی کن.')}},22000);
 peer.on('error',e=>{net='local';if(e.type==='peer-unavailable'){try{localStorage.removeItem('uno-sess')}catch(x){}}err(e.type==='peer-unavailable'?'اتاقی با این کد پیدا نشد':'خطا در اتصال: '+e.type)});
-peer.on('open',()=>{conn=peer.connect('uno-'+c,{reliable:true});
-conn.on('open',()=>conn.send(ss?{t:'rejoin',seat:ss.seat,token:ss.token,n:myName()}:{t:'hello',n:myName()}));
+peer.on('open',()=>{clearTimeout(to);conn=peer.connect('uno-'+c,{reliable:true});
+const t2=setTimeout(()=>{if(net==='client'&&!conn.open){net='local';try{peer.destroy()}catch(e){}err('اتصال به میزبان برقرار نشد. کد/لینک را چک کن یا از میزبان بخواه اتاق را دوباره بسازد.')}},15000);
+conn.on('open',()=>clearTimeout(t2)||conn.send(ss?{t:'rejoin',seat:ss.seat,token:ss.token,n:myName()}:{t:'hello',n:myName()}));
 conn.on('data',d=>{
 if(d.t==='seat'){try{localStorage.setItem('uno-sess',JSON.stringify({code:c,seat:d.seat,token:d.token}))}catch(e){}info('وصل شدی ✅<br>منتظر شروع بازی توسط میزبان…')}
 else if(d.t==='full'){try{localStorage.removeItem('uno-sess')}catch(e){}net='local';err('اتاق پر است یا بازی شروع شده')}
@@ -271,7 +300,7 @@ if(V.dn+V.top.c+V.top.v!==p.k||V.color!==p.col){fl.fly=p.cur===V.me?'fm':'fo';sf
 if(V.hand.length>p.hl){fl.deal=p.hl;sfx('draw')}
 if(V.cur===V.me&&p.cur!==V.me&&!V.over)sfx('turn');
 if(V.uno>=0&&p.uno<0)sfx('uno');
-if(V.over&&!p.over)sfx(V.winner===V.me?'win':'lose')}
+if(V.over&&!p.over){sfx(V.winner===V.me?'win':'lose');rec(V.winner===V.me,V.pts,V.matchDone)}}
 let ac,mute=false;
 function tone(f,d,t='sine',v=.15,w=0){if(mute||!ac)return;const o=ac.createOscillator(),g=ac.createGain(),t0=ac.currentTime+w;o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,t0);g.gain.exponentialRampToValueAtTime(.001,t0+d);o.connect(g);g.connect(ac.destination);o.start(t0);o.stop(t0+d)}
 const SFX={play:()=>tone(520,.08,'triangle'),draw:()=>tone(300,.1),turn:()=>{tone(660,.1);tone(880,.12,'sine',.15,.1)},uno:()=>{tone(700,.1,'square',.08);tone(1000,.15,'square',.08,.1)},win:()=>[523,659,784,1047].forEach((f,i)=>tone(f,.25,'triangle',.15,i*.12)),lose:()=>[400,330,260].forEach((f,i)=>tone(f,.25,'sine',.15,i*.15))};
@@ -280,21 +309,94 @@ addEventListener('pointerdown',()=>{try{if(!ac)ac=new(window.AudioContext||windo
 const fa=n=>String(n).replace(/\d/g,d=>FA[d]);
 const sk=c=>'rygbw'.indexOf(c.c)*20+({S:10,R:11,D:12,W:13,F:14}[c.v]??+c.v);
 function next(){start(matchDone)}
-function callUno(s){if(over||unoP<0||called)return;
+function callUno(s){if(!over&&unoP<0&&s===cur&&hands[s].length===2){pre=s;msg=names[s]+': اونو!';return go()}
+if(over||unoP<0||called)return;
 if(s===unoP){called=true;msg=names[s]+': اونو!'}
 else{draw(2,unoP);msg=names[s]+' '+names[unoP]+' را گرفت — ۲ کارت جریمه';unoP=-1}go()}
 function showEmo(s,e){emos[s]=e;if(V)render();clearTimeout(et[s]);et[s]=setTimeout(()=>{emos[s]='';if(V)render()},2500)}
 function emoAll(s,e){if(!EM.includes(e))return;showEmo(s,e);for(const k in conns){try{conns[k].send({t:'emo',s,e})}catch(x){}}}
 function react(e){if(net==='client')conn.send({t:'emo',e});else emoAll(0,e)}
-$('emo').innerHTML='<span id="myav"></span>'+EM.map(e=>`<button onclick="react('${e}')">${e}</button>`).join('')+'<button onclick="sortOn=!sortOn;render()">🎨</button><button onclick="histOn=!histOn;render()">📜</button><button onclick="mute=!mute;this.style.opacity=mute?.4:1">🔊</button>';
+$('emo').innerHTML='<span id="myav"></span>'+EM.map(e=>`<button onclick="react('${e}')">${e}</button>`).join('')+'<button onclick="togSort()">🎨</button><button onclick="histOn=!histOn;render()">📜</button><button id="mb" onclick="togMute()">🔊</button>';
 try{$('nm').value=localStorage.getItem('uno-name')||''}catch(e){}
 $('nm').oninput=()=>{try{localStorage.setItem('uno-name',$('nm').value)}catch(e){}};
-function needPeer(cb,quiet){if(typeof Peer!=='undefined')return cb&&cb();
+const MQT='unoq7/',BROKERS=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt','wss://test.mosquitto.org:8081'];
+function mqConn(ok,fail){let i=0;const nx=()=>{if(i>=BROKERS.length)return fail();let d=0;
+const c=mqtt.connect(BROKERS[i++],{connectTimeout:5000,reconnectPeriod:0,keepalive:20,clean:true,clientId:'uno'+Math.random().toString(36).slice(2,10)});
+const bad=()=>{if(d)return;d=1;clearTimeout(to);try{c.end(true)}catch(e){}nx()};
+const to=setTimeout(bad,6000);
+c.on('connect',()=>{if(d)return;d=1;clearTimeout(to);c.options.reconnectPeriod=2000;ok(c)});
+c.on('error',bad);c.on('close',bad)};nx()}
+class Conn{constructor(p,to,c){this.p=p;this.to=to;this.c=c;this.h={};this.open=false;this.dead=false;this.t=Date.now()}
+on(e,f){this.h[e]=f}
+dst(){return this.p.id?MQT+'c/'+this.c:MQT+this.to+'/h'}
+send(d){this.p.pub(this.dst(),{k:'d',c:this.c,d})}
+close(){if(this.dead)return;this.p.pub(this.dst(),{k:'x',c:this.c});this.fin()}
+fin(){if(this.dead)return;this.dead=true;this.open=false;clearInterval(this.ri);this.h.close&&this.h.close()}}
+class Peer{constructor(id){this.id=id;this.h={};this.open=false;this.cs={};this.dead=false;
+mqConn(c=>{if(this.dead)return c.end(true);this.m=c;
+this.inbox=id?MQT+id+'/h':MQT+'c/'+(this.cid=Math.random().toString(36).slice(2,10));
+c.on('message',(t,m)=>{try{this.rx(JSON.parse(new TextDecoder().decode(m)))}catch(e){}});
+c.subscribe(this.inbox,{qos:0},er=>{if(er)return this.err('server-error');this.open=true;this.h.open&&this.h.open(id||this.cid)});
+this.iv=setInterval(()=>this.tick(),4000)},()=>this.err('network'))}
+on(e,f){this.h[e]=f}
+err(t){this.h.error&&this.h.error({type:t})}
+pub(t,o){if(this.m&&this.m.connected)this.m.publish(t,JSON.stringify(o),{qos:0})}
+connect(hid){this.hid=hid;const cn=new Conn(this,hid,this.cid);this.cs[hid]=cn;
+const hi=()=>{if(!cn.open&&!cn.dead)this.pub(MQT+hid+'/h',{k:'o',c:this.cid})};hi();cn.ri=setInterval(hi,2000);return cn}
+rx(o){if(this.id){let cn=this.cs[o.c];
+if(o.k==='o'){if(!cn){cn=new Conn(this,null,o.c);cn.open=true;this.cs[o.c]=cn;this.h.connection&&this.h.connection(cn)}cn.t=Date.now();this.pub(MQT+'c/'+o.c,{k:'a'});return}
+if(!cn)return;cn.t=Date.now();
+if(o.k==='d')cn.h.data&&cn.h.data(o.d);else if(o.k==='x'){delete this.cs[o.c];cn.fin()}}
+else{const cn=this.cs[this.hid];if(!cn)return;cn.t=Date.now();
+if(o.k==='a'){if(!cn.open){cn.open=true;clearInterval(cn.ri);cn.h.open&&cn.h.open()}}
+else if(o.k==='d')cn.h.data&&cn.h.data(o.d);else if(o.k==='x')cn.fin()}}
+tick(){const now=Date.now();
+if(this.id){for(const k in this.cs){const cn=this.cs[k];if(now-cn.t>16000){delete this.cs[k];cn.fin()}else this.pub(MQT+'c/'+k,{k:'p'})}}
+else{const cn=this.cs[this.hid];if(cn&&cn.open){this.pub(MQT+this.hid+'/h',{k:'p',c:this.cid});if(now-cn.t>16000)cn.fin()}}}
+destroy(){this.dead=true;clearInterval(this.iv);for(const k in this.cs){const c=this.cs[k];c.h={};c.close()}try{this.m&&this.m.end()}catch(e){}}}
+function needPeer(cb,quiet){if(typeof mqtt!=='undefined')return cb&&cb();
 if(!quiet)info('در حال آماده‌سازی بازی آنلاین…');
-const U=['https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js','https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js'];let i=0;
+const U=['https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js','https://unpkg.com/mqtt@5.10.1/dist/mqtt.min.js'];let i=0;
 const t=()=>{const sc=document.createElement('script');sc.src=U[i];sc.onload=()=>cb&&cb();
 sc.onerror=()=>{sc.remove();if(++i<U.length)t();else if(!quiet)err('برای بازی آنلاین اینترنت لازم است')};document.head.appendChild(sc)};t()}
+addEventListener('resize',()=>{if(V){fl={};render0()}});
 addEventListener('load',()=>setTimeout(()=>needPeer(null,true),800));
+const cfgv=()=>(net==='client'&&V&&V.cfg)||{tt:TT/1000,target:TARGET,bots:BOTS};
+const savePrefs=()=>{try{localStorage.setItem('uno-prefs',JSON.stringify({mute,sort:sortOn}))}catch(e){}};
+function togMute(){mute=!mute;savePrefs();$('mb').style.opacity=mute?.4:1;if(!$('gen').hidden)showSet()}
+function togSort(){sortOn=!sortOn;savePrefs();if(V){fl={};render0()}if(!$('gen').hidden)showSet()}
+function setCfg(k,v){if(net==='client')return;if(k==='tt')TT=v*1000;else if(k==='target')TARGET=v;else BOTS=v;
+try{localStorage.setItem('uno-cfg',JSON.stringify({tt:TT/1000,target:TARGET,bots:BOTS}))}catch(e){}if(V&&typeof started!=='undefined'&&started)go();showSet()}
+function newGame(){if(net==='client')return;if(net==='host'&&!over&&!confirm('بازی جدید شروع شود؟ امتیازها صفر می‌شود.'))return;start(1)}
+function leaveRoom(){try{localStorage.removeItem('uno-sess')}catch(e){}try{conn.send({t:'leave'})}catch(e){}setTimeout(()=>location.reload(),250)}
+function gen(t,h){$('gt').textContent=t;$('gb').innerHTML=h;$('gen').hidden=false}
+function showSet(){const host=net!=='client',c=cfgv();
+const sw=(t,on,f)=>`<div class="srow"><span>${t}</span><button class="new${on?' sel':''}" onclick="${f}()">${on?'روشن':'خاموش'}</button></div>`;
+const ob=(k,v,t)=>`<button class="new${c[k]===v?' sel':''}" onclick="setCfg('${k}',${v})">${t}</button>`;
+let h='<h3>شخصی</h3>'+sw('🔊 صدا',!mute,'togMute')+sw('🎨 مرتب‌سازی کارت‌ها',sortOn,'togSort');
+if(host){h+='<h3>👑 تنظیمات میزبان</h3>'+`<div class="srow"><span>⏱️ زمان نوبت</span><span>${[10,20,30,60].map(v=>ob('tt',v,fa(v)+' ث')).join('')}</span></div><div class="srow"><span>🏆 هدف امتیاز</span><span>${[100,200,300,500].map(v=>ob('target',v,fa(v))).join('')}</span></div><div class="srow"><span>🤖 سرعت بات</span><span>${ob('bots',.6,'سریع')}${ob('bots',1,'معمولی')}${ob('bots',1.7,'آرام')}</span></div>`;
+if(net==='host'){const ks=Object.keys(conns);if(ks.length)h+='<h3>بازیکن‌ها</h3>'+ks.map(k=>`<div class="srow"><span>${esc(names[k])}</span><button class="new" onclick="kick(${k});showSet()">✕ حذف</button></div>`).join('')}}
+else h+=`<h3>تنظیمات میزبان</h3><div class="srow"><span>⏱️ زمان نوبت</span><b>${fa(c.tt)} ثانیه</b></div><div class="srow"><span>🏆 هدف امتیاز</span><b>${fa(c.target)}</b></div>`;
+gen('⚙️ تنظیمات',h)}
+function showRules(){const c=cfgv(),k=(a,b)=>cardEl({c:a,v:b},'');
+gen('📖 قوانین',`<h3>🎯 هدف</h3><p>زودتر از همه کارت‌هات رو تموم کن. برندهٔ هر دست امتیاز کارت‌های باقی‌ماندهٔ بقیه رو می‌گیره و اولین نفری که به ${fa(c.target)} امتیاز برسه، مسابقه رو می‌بره.</p>
+<h3>🃏 نوبت تو</h3><p>یک کارت هم‌رنگ یا هم‌عدد/هم‌نماد با کارت وسط بنداز. کارت نداری یا نمی‌خوای؟ از دسته بکش؛ اگه کارت کشیده‌شده بخوره می‌تونی بندازیش، وگرنه نوبت می‌ره.</p>
+<h3>✨ کارت‌های ویژه</h3>
+<div class="rr">${k('r','S')}<span><b>رد کردن:</b> نوبت نفر بعدی می‌سوزه.</span></div>
+<div class="rr">${k('b','R')}<span><b>برعکس:</b> جهت بازی عوض می‌شه (در بازی ۲ نفره مثل رد کردنه).</span></div>
+<div class="rr">${k('g','D')}<span><b>+۲:</b> نفر بعدی ۲ کارت می‌گیره، مگر اینکه +۲ یا +۴ روش بذاره؛ اون‌وقت جریمه جمع می‌شه.</span></div>
+<div class="rr">${k('w','W')}<span><b>جوکر:</b> روی هر کارتی میاد و رنگ رو خودت انتخاب می‌کنی.</span></div>
+<div class="rr">${k('w','F')}<span><b>+۴:</b> جوکر با ۴ کارت جریمه؛ قابل جمع شدن با +۲ و +۴ بعدی.</span></div>
+<h3>📣 اونو!</h3><p>وقتی ۲ کارت داری و نوبتته، قبل از انداختن کارت دکمهٔ «اونو!» رو بزن. اگه با ۱ کارت موندی و نگفتی، بقیه می‌تونن «گرفتمش!» بزنن و ۲ کارت جریمه بگیری.</p>
+<h3>⏱️ زمان</h3><p>${fa(c.tt)} ثانیه برای هر نوبت وقت داری؛ بعدش خودکار کارت می‌کشی. حلقهٔ دور آواتار زمان باقی‌مونده رو نشون می‌ده.</p>
+<h3>🏆 امتیاز کارت‌ها</h3><p>عددها = خودشون، ⛔ ⇄ +۲ = ۲۰، جوکر و +۴ = ۵۰.</p>
+<h3>🌐 بازی آنلاین</h3><p>میزبان اتاق رو می‌سازه و لینک رو می‌فرسته. بعد از هر دست، هر بازیکن «آماده‌ام» یا «خروج» می‌زنه و میزبان تأیید می‌کنه که دست بعد شروع بشه. اگه کسی خارج بشه، بات جاش رو می‌گیره.</p>`)}
+const getSt=()=>{try{return Object.assign({g:0,w:0,l:0,st:0,best:0,mw:0,top:0},JSON.parse(localStorage.getItem('uno-stats')||'{}'))}catch(e){return{g:0,w:0,l:0,st:0,best:0,mw:0,top:0}}};
+function rec(win,p,md){const t=getSt();t.g++;if(win){t.w++;t.st++;t.best=Math.max(t.best,t.st);t.top=Math.max(t.top,p||0);if(md)t.mw++}else{t.l++;t.st=0}try{localStorage.setItem('uno-stats',JSON.stringify(t))}catch(e){}}
+function showStats(){const t=getSt(),b=(n,l)=>`<div><b>${fa(n)}</b>${l}</div>`;
+gen('📊 آمار من',`<div class="stg">${b(t.g,'دست بازی‌شده')}${b(t.g?Math.round(t.w/t.g*100):0,'درصد برد')}${b(t.w,'برد')}${b(t.l,'باخت')}${b(t.st,'برد پشت‌هم فعلی')}${b(t.best,'بهترین برد پشت‌هم')}${b(t.mw,'مسابقهٔ برده')}${b(t.top,'بیشترین امتیاز یک دست')}</div><p style="text-align:center"><button class="new" onclick="if(confirm('آمار صفر شود؟')){localStorage.removeItem('uno-stats');showStats()}">صفر کردن آمار</button></p>`)}
+try{const c=JSON.parse(localStorage.getItem('uno-cfg')||'null');if(c){TT=(+c.tt||20)*1000;TARGET=+c.target||200;BOTS=+c.bots||1}const q=JSON.parse(localStorage.getItem('uno-prefs')||'null');if(q){mute=!!q.mute;sortOn=q.sort!==false}}catch(e){}
+$('mb').style.opacity=mute?.4:1;
 showRj();
 const rm=new URLSearchParams(location.search).get('room');if(rm){$('code').value=rm.toUpperCase().slice(0,5);document.body.classList.add('inv');$('invb').hidden=false;$('invb').textContent='ورود به اتاق '+$('code').value}
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();ip=e;$('inst').hidden=false});
