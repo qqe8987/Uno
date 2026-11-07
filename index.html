@@ -159,9 +159,9 @@ body[data-skin=paper]{--r:#b3261e;--y:#b07800;--g:#2f7d4f;--b:#1f5fa8}
 const BACK="<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 96'><rect width='64' height='96' fill='#14305a'/><rect x='3.5' y='3.5' width='57' height='89' rx='5' fill='none' stroke='#e2b04a' stroke-width='1.4'/><g transform='translate(32 48)' stroke='#e2b04a' stroke-width='1.3'><ellipse rx='21' ry='36' fill='#0f6e73'/><rect x='-14' y='-14' width='28' height='28' fill='#14305a'/><rect x='-14' y='-14' width='28' height='28' fill='#14305a' transform='rotate(45)'/><circle r='7' fill='#b83227'/><circle r='2.2' fill='#e2b04a' stroke='none'/></g><g fill='#e2b04a'><circle cx='32' cy='10' r='2.4'/><circle cx='32' cy='86' r='2.4'/><circle cx='10' cy='48' r='2'/><circle cx='54' cy='48' r='2'/></g></svg>";
 document.documentElement.style.setProperty('--back','url("data:image/svg+xml,'+encodeURIComponent(BACK)+'")');
 const NAMES=['تو','رضا','سارا','علی','مریم','حسین'],CN={r:'قرمز',y:'زرد',g:'سبز',b:'آبی'};
-const L={S:'⛔',R:'⇄',D:'+۲',W:'★',F:'+۴'},FA='۰۱۲۳۴۵۶۷۸۹';
+const L={X:'🗑️',S:'⛔',R:'⇄',D:'+۲',W:'★',F:'+۴'},FA='۰۱۲۳۴۵۶۷۸۹';
 let deck,disc,hands,cur,dir,color,drew,over,winner,msg='',pending,V,timer,stack=0,unoP=-1,called=false,scores=[0,0,0,0],pts=0,matchDone=false,sortOn=true,tapR=null,hideTop=false,skin='classic',HS=0,specs=[],snapS=null,isSpec=false,migT,migIv,tries=0,teams=false,ready=[],pre=-1,N=4,hist=[],lastMsg='',pv=null,fl={},histOn=false,lack=[],dl=0,tmo,lastCur=-1,lastHum=false,tt=1100,pname=[],tokens=[],ip,emos=['','','','','',''],et=[];
-let TT=20000,TARGET=200,BOTS=1;
+let TT=20000,TARGET=200,BOTS=1,XC=true;
 const SIGNAL={},ICE=[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'}/*,{urls:'turn:YOUR_TURN_HOST:3478',username:'USER',credential:'PASS'}*/],EM=['😂','👏','😡','😎','🤔','🔥'];
 let net='local',peer,conn,conns={},hum=new Set([0]),names=NAMES.slice(),code='',started=false;
 const $=id=>document.getElementById(id);
@@ -171,7 +171,7 @@ const ok=(c,t=topCard(),col=color,s=stack)=>s>0?(c.v==='D'||c.v==='F'):(c.c==='w
 const lab=c=>L[c.v]||FA[+c.v];
 function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}}
 function build(){deck=[];for(const c of'rygb'){for(let n=0;n<=9;n++){deck.push({c,v:''+n});if(n)deck.push({c,v:''+n})}
-for(const v of'SRD'){deck.push({c,v});deck.push({c,v})}}
+for(const v of'SRD'){deck.push({c,v});deck.push({c,v})}if(XC)deck.push({c,v:'X'})}
 for(let i=0;i<4;i++){deck.push({c:'w',v:'W'});deck.push({c:'w',v:'F'})}shuf(deck)}
 function draw(n,p){for(let i=0;i<n;i++){if(!deck.length){const t=disc.pop();deck=disc;shuf(deck);disc=[t]}
 if(!deck.length)break;hands[p].push(deck.pop())}}
@@ -183,8 +183,9 @@ color=disc[0].c;cur=0;dir=1;drew=false;over=false;winner=-1;pending=null;started
 names=NAMES.slice();names[HS]=myName()||NAMES[HS];hum=new Set([HS]);if(HS!==0)names[0]='بات';
 for(const s in conns){hum.add(+s);names[s]=pname[s]||'دوست '+FA[s]}
 msg='بازی شروع شد';$('menu').hidden=true;$('end').hidden=true;$('pick').hidden=true;go()}
-function play(p,i,col){const c=hands[p].splice(i,1)[0];disc.push(c);lack[p].delete(c.c);color=col||c.c;
+function play(p,i,col){const c=hands[p].splice(i,1)[0];let nd=0;if(c.v==='X'){const dd=hands[p].filter(x=>x.c===c.c);nd=dd.length;hands[p]=hands[p].filter(x=>x.c!==c.c);disc.push(...dd)}disc.push(c);lack[p].delete(c.c);color=col||c.c;
 let t=names[p]+': '+(c.c==='w'?'جوکر، رنگ '+CN[color]:lab(c)+' '+CN[c.c]);
+if(nd)t+=' — '+fa(nd)+' کارت هم‌رنگ هم ریخته شد';
 if(hands[p].length===1){unoP=p;called=(!hum.has(p)&&Math.random()<.8)||pre===p;pre=-1;t+=called?' — اونو!':' — یک کارت مانده'}
 if(!hands[p].length){over=true;winner=p;msg=t;pts=hands.reduce((s,h,i)=>s+(teams&&i%2===p%2?0:h.reduce((a,c)=>a+(c.c==='w'?50:isNaN(c.v)?20:+c.v),0)),0);scores[p]+=pts;if(teams)scores[(p+2)%4]+=pts;matchDone=scores[p]>=TARGET;return go()}
 if(c.v==='R')dir=-dir;
@@ -202,7 +203,7 @@ if(l&&ok(l)){drew=true;msg=names[p]+' کارت کشید'}
 else{msg=names[p]+' کارت کشید و رد شد';cur=nx(p)}}
 else{drew=false;msg=names[p]+' رد شد';cur=nx(p)}
 go()}}
-function view(s,w){const q=s<0?(w||0):s;return{hand:hands[q],counts:hands.map(h=>h.length),top:topCard(),color,cur,msg,over,winner,drew:drew&&cur===q,me:q,names,stack,uno:unoP>=0&&!called?unoP:-1,scores,pts,matchDone,target:TARGET,cfg:{tt:TT/1000,target:TARGET,bots:BOTS},st:Array.from({length:N},(_,i)=>i===HS?'h':hum.has(i)?(ready[i]?'r':'w'):'b'),n:N,team:teams,spec:s<0,nspec:specs.length,dir,hist,dn:disc.length,tl:Math.max(0,dl-Date.now()),tt,pre:pre===s}}
+function view(s,w){const q=s<0?(w||0):s;return{hand:hands[q],counts:hands.map(h=>h.length),top:topCard(),color,cur,msg,over,winner,drew:drew&&cur===q,me:q,names,stack,uno:unoP>=0&&!called?unoP:-1,scores,pts,matchDone,target:TARGET,cfg:{tt:TT/1000,target:TARGET,bots:BOTS,xc:XC?1:0},st:Array.from({length:N},(_,i)=>i===HS?'h':hum.has(i)?(ready[i]?'r':'w'):'b'),n:N,team:teams,spec:s<0,nspec:specs.length,dir,hist,dn:disc.length,tl:Math.max(0,dl-Date.now()),tt,pre:pre===s}}
 function go(){if(msg!==lastMsg){hist.unshift(msg);hist.length=Math.min(hist.length,8);lastMsg=msg}const hh=hum.has(cur);if(over){clearTimeout(tmo);lastCur=-1}else if(cur!==lastCur||hh!==lastHum){lastCur=cur;lastHum=hh;clearTimeout(tmo);tt=hh?TT:Math.round(1100*BOTS);dl=Date.now()+tt;if(hh)tmo=setTimeout(timeUp,TT)}
 V=view(HS);render();
 for(const s in conns){try{conns[s].send({t:'state',v:view(+s)})}catch(e){}}
@@ -219,7 +220,7 @@ const cnt={r:0,y:0,g:0,b:0};h.forEach(c=>{if(c.c!=='w')cnt[c.c]++});
 const hot=hands[n].length<=2,allW=idx.every(j=>h[j].c==='w');
 const sc=i=>{const c=h[i];let x=Math.random();
 if(c.c==='w'){x-=hot&&c.v==='F'?-80:50;if(h.length<=2||allW)x+=50}
-else{x+=(teams&&c.v==='S'&&hands[(p+2)%4].length<=2?15:0)+cnt[c.c]*2+(isNaN(c.v)?(hot?20:4):+c.v*.5)}
+else{x+=(c.v==='X'?cnt[c.c]*4:0)+(teams&&c.v==='S'&&hands[(p+2)%4].length<=2?15:0)+cnt[c.c]*2+(isNaN(c.v)?(hot?20:4):+c.v*.5)}
 return x};
 let i=idx[0],best=-1e9;for(const j of idx){const v=sc(j);if(v>best){best=v;i=j}}
 let col;if(h[i].c==='w'){const k={r:0,y:0,g:0,b:0};h.forEach((c,j)=>{if(j!==i&&c.c!=='w')k[c.c]+=2});
@@ -250,7 +251,7 @@ $('me').className='me'+(V.cur===V.me&&!V.over?' on':'');
 $('msg').textContent=histOn?V.hist.join('\n'):V.msg;
 $('nb').hidden=net==='client';$('again').hidden=net==='client';
 $('end').hidden=!V.over;
-$('myav').innerHTML=avEl(V.me);$('emo').hidden=!!V.spec;$('wrow').hidden=!V.spec;if(V.spec)$('wrow').innerHTML='<span>👀 تماشا:</span>'+V.names.map((n,i)=>`<button class="new${i===V.me?' sel':''}" onclick="watch(${i})">${esc(n)}</button>`).join('');$('nb').hidden=net==='client';const pre2=!V.spec&&V.cur===V.me&&V.hand.length===2&&!V.pre&&!V.over,showU=!V.spec&&((V.uno>=0&&!V.over)||pre2);$('unob').style.visibility=showU?'visible':'hidden';$('unob').className='big'+(showU?' on':'');if(showU)$('unob').textContent=(V.uno===V.me||(pre2&&V.uno<0))?'اونو!':'گرفتمش! ('+V.names[V.uno]+')';
+$('myav').innerHTML=avEl(V.me);$('emo').hidden=!!V.spec;$('wrow').hidden=!V.spec;if(V.spec)$('wrow').innerHTML='<span>👀 تماشا:</span>'+V.names.slice(0,V.n).map((n,i)=>`<button class="new${i===V.me?' sel':''}" onclick="watch(${i})">${esc(n)}</button>`).join('');$('nb').hidden=net==='client';const pre2=!V.spec&&V.cur===V.me&&V.hand.length===2&&!V.pre&&!V.over,showU=!V.spec&&((V.uno>=0&&!V.over)||pre2);$('unob').style.visibility=showU?'visible':'hidden';$('unob').className='big'+(showU?' on':'');if(showU)$('unob').textContent=(V.uno===V.me||(pre2&&V.uno<0))?'اونو!':'گرفتمش! ('+V.names[V.uno]+')';
 if(V.over){const sc=(V.team?[0,1]:V.scores.map((x,i)=>i)).map(i=>`<div>${V.team?esc(V.names[i])+' و '+esc(V.names[i+2]):esc(V.names[i])}: <b>${fa(V.scores[i])}</b></div>`).join('');
 $('endt').innerHTML=(V.spec?esc(V.names[V.winner])+' برد':V.team?(V.winner%2===V.me%2?'🎉 تیم شما برد!':'تیم حریف برد'):(V.winner===V.me?'🎉 بردی!':esc(V.names[V.winner])+' برد'))+` (+${fa(V.pts)} امتیاز)<div style="font-size:15px;margin:10px 0">${sc}<small>هدف: ${fa(V.target)}</small></div>`+(V.matchDone?`<div>🏆 برندهٔ مسابقه: ${esc(V.names[V.winner])}</div>`:'')+(net==='client'?' — منتظر میزبان…':'');
 $('again').textContent=V.matchDone?'شروع مسابقهٔ جدید':'شروع دست بعد';
@@ -344,7 +345,7 @@ const SFX={play:()=>tone(520,.08,'triangle'),draw:()=>tone(300,.1),turn:()=>{ton
 function sfx(n){try{SFX[n]()}catch(e){}}
 addEventListener('pointerdown',()=>{try{if(!ac)ac=new(window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){}});
 const fa=n=>String(n).replace(/\d/g,d=>FA[d]);
-const sk=c=>'rygbw'.indexOf(c.c)*20+({S:10,R:11,D:12,W:13,F:14}[c.v]??+c.v);
+const sk=c=>'rygbw'.indexOf(c.c)*20+({S:10,R:11,D:12,W:13,F:14,X:15}[c.v]??+c.v);
 function next(){start(matchDone)}
 function callUno(s){if(!over&&unoP<0&&s===cur&&hands[s].length===2){pre=s;msg=names[s]+': اونو!';return go()}
 if(over||unoP<0||called)return;
@@ -398,11 +399,11 @@ const t=()=>{const sc=document.createElement('script');sc.src=U[i];sc.onload=()=
 sc.onerror=()=>{sc.remove();if(++i<U.length)t();else if(!quiet)err('برای بازی آنلاین اینترنت لازم است')};document.head.appendChild(sc)};t()}
 addEventListener('resize',()=>{if(V){fl={};render0()}});
 addEventListener('load',()=>setTimeout(()=>needPeer(null,true),800));
-function engSnap(){return{N,teams,deck,disc,hands,cur,dir,color,drew,over,winner,stack,unoP,called,pre,scores,pts,matchDone,hist,names,pname:Array.from(pname,x=>x||''),tokens:Array.from(tokens,x=>x||''),ready:Array.from(ready,x=>!!x),lack:lack.map(x=>[...x]),TT,TARGET,BOTS,code,HS,hum:[...new Set([...hum,...Object.keys(conns).map(Number)])]}}
+function engSnap(){return{N,teams,deck,disc,hands,cur,dir,color,drew,over,winner,stack,unoP,called,pre,scores,pts,matchDone,hist,names,pname:Array.from(pname,x=>x||''),tokens:Array.from(tokens,x=>x||''),ready:Array.from(ready,x=>!!x),lack:lack.map(x=>[...x]),TT,TARGET,BOTS,XC,code,HS,hum:[...new Set([...hum,...Object.keys(conns).map(Number)])]}}
 function takeOver(){if(net==='host'||!snapS||isSpec)return;let sn;try{sn=JSON.parse(snapS)}catch(e){return}
 clearTimeout(migT);clearInterval(migIv);if(!V)return;const me=V.me;
 try{peer&&peer.destroy()}catch(e){}conn=null;
-N=sn.N;teams=sn.teams;deck=sn.deck;disc=sn.disc;hands=sn.hands;cur=sn.cur;dir=sn.dir;color=sn.color;drew=sn.drew;over=sn.over;winner=sn.winner;stack=sn.stack;unoP=sn.unoP;called=sn.called;pre=sn.pre;scores=sn.scores;pts=sn.pts;matchDone=sn.matchDone;hist=sn.hist;lastMsg='';names=sn.names;pname=sn.pname;tokens=sn.tokens;ready=sn.ready;lack=sn.lack.map(a=>new Set(a));TT=sn.TT;TARGET=sn.TARGET;BOTS=sn.BOTS;code=sn.code;
+N=sn.N;teams=sn.teams;deck=sn.deck;disc=sn.disc;hands=sn.hands;cur=sn.cur;dir=sn.dir;color=sn.color;drew=sn.drew;over=sn.over;winner=sn.winner;stack=sn.stack;unoP=sn.unoP;called=sn.called;pre=sn.pre;scores=sn.scores;pts=sn.pts;matchDone=sn.matchDone;hist=sn.hist;lastMsg='';names=sn.names;pname=sn.pname;tokens=sn.tokens;ready=sn.ready;lack=sn.lack.map(a=>new Set(a));TT=sn.TT;TARGET=sn.TARGET;BOTS=sn.BOTS;XC=sn.XC!==false;code=sn.code;
 HS=me;started=true;net='host';conns={};specs=[];hum=new Set([HS]);lastCur=-1;pv=null;
 if(!tokens[sn.HS])tokens[sn.HS]=Math.random().toString(36).slice(2);
 msg='👑 '+names[HS]+' میزبان جدید شد';$('menu').hidden=true;
@@ -430,12 +431,12 @@ function watch(i){if(conn)conn.send({t:'watch',s:i})}
 const SKINS=[['classic','کلاسیک'],['neon','نئون'],['pastel','پاستل'],['contrast','کنتراست'],['paper','کاغذی']];
 function skinRow(){return`<div class="srow"><span>🎴 پوستهٔ کارت</span><span>${SKINS.map(([k,t])=>`<button class="new${skin===k?' sel':''}" onclick="setSkin('${k}')">${t}</button>`).join('')}</span></div><div class="rr" style="justify-content:center">${['r','y','g','b'].map((c,i)=>cardEl({c,v:''+(i+2)},'')).join('')}${cardEl({c:'w',v:'F'},'')}</div>`}
 function setSkin(k){skin=k;document.body.dataset.skin=k;savePrefs();showSet()}
-const cfgv=()=>(net==='client'&&V&&V.cfg)||{tt:TT/1000,target:TARGET,bots:BOTS};
+const cfgv=()=>(net==='client'&&V&&V.cfg)||{tt:TT/1000,target:TARGET,bots:BOTS,xc:XC?1:0};
 const savePrefs=()=>{try{localStorage.setItem('uno-prefs',JSON.stringify({mute,sort:sortOn,skin}))}catch(e){}};
 function togMute(){mute=!mute;savePrefs();$('mb').style.opacity=mute?.4:1;if(!$('gen').hidden)showSet()}
 function togSort(){sortOn=!sortOn;savePrefs();if(V){fl={};render0()}if(!$('gen').hidden)showSet()}
-function setCfg(k,v){if(net==='client')return;if(k==='tt')TT=v*1000;else if(k==='target')TARGET=v;else BOTS=v;
-try{localStorage.setItem('uno-cfg',JSON.stringify({tt:TT/1000,target:TARGET,bots:BOTS}))}catch(e){}if(V&&typeof started!=='undefined'&&started)go();showSet()}
+function setCfg(k,v){if(net==='client')return;if(k==='tt')TT=v*1000;else if(k==='target')TARGET=v;else if(k==='xc')XC=!!v;else BOTS=v;
+try{localStorage.setItem('uno-cfg',JSON.stringify({tt:TT/1000,target:TARGET,bots:BOTS,xc:XC?1:0}))}catch(e){}if(V&&typeof started!=='undefined'&&started)go();showSet()}
 function newGame(){if(net==='client')return;if(net==='host'&&!over&&!confirm('بازی جدید شروع شود؟ امتیازها صفر می‌شود.'))return;start(1)}
 function leaveRoom(){try{localStorage.removeItem('uno-sess')}catch(e){}try{conn.send({t:'leave'})}catch(e){}setTimeout(()=>location.reload(),250)}
 function gen(t,h){$('gt').textContent=t;$('gb').innerHTML=h;$('gen').hidden=false}
@@ -443,7 +444,7 @@ function showSet(){const host=net!=='client',c=cfgv();
 const sw=(t,on,f)=>`<div class="srow"><span>${t}</span><button class="new${on?' sel':''}" onclick="${f}()">${on?'روشن':'خاموش'}</button></div>`;
 const ob=(k,v,t)=>`<button class="new${c[k]===v?' sel':''}" onclick="setCfg('${k}',${v})">${t}</button>`;
 let h='<h3>شخصی</h3>'+sw('🔊 صدا',!mute,'togMute')+sw('🎨 مرتب‌سازی کارت‌ها',sortOn,'togSort')+skinRow();
-if(host){h+='<h3>👑 تنظیمات میزبان</h3>'+`<div class="srow"><span>⏱️ زمان نوبت</span><span>${[10,20,30,60].map(v=>ob('tt',v,fa(v)+' ث')).join('')}</span></div><div class="srow"><span>🏆 هدف امتیاز</span><span>${[100,200,300,500].map(v=>ob('target',v,fa(v))).join('')}</span></div><div class="srow"><span>🤖 سرعت بات</span><span>${ob('bots',.6,'سریع')}${ob('bots',1,'معمولی')}${ob('bots',1.7,'آرام')}</span></div>`;
+if(host){h+='<h3>👑 تنظیمات میزبان</h3>'+`<div class="srow"><span>⏱️ زمان نوبت</span><span>${[10,20,30,60].map(v=>ob('tt',v,fa(v)+' ث')).join('')}</span></div><div class="srow"><span>🏆 هدف امتیاز</span><span>${[100,200,300,500].map(v=>ob('target',v,fa(v))).join('')}</span></div><div class="srow"><span>🤖 سرعت بات</span><span>${ob('bots',.6,'سریع')}${ob('bots',1,'معمولی')}${ob('bots',1.7,'آرام')}</span></div><div class="srow"><span>🗑️ کارت «ریختن همه» (از دست بعد)</span><span>${ob('xc',1,'روشن')}${ob('xc',0,'خاموش')}</span></div>`;
 if(net==='host'){const ks=Object.keys(conns);if(ks.length)h+='<h3>بازیکن‌ها</h3>'+ks.map(k=>`<div class="srow"><span>${esc(names[k])}</span><button class="new" onclick="kick(${k});showSet()">✕ حذف</button></div>`).join('')}}
 else h+=`<h3>تنظیمات میزبان</h3><div class="srow"><span>⏱️ زمان نوبت</span><b>${fa(c.tt)} ثانیه</b></div><div class="srow"><span>🏆 هدف امتیاز</span><b>${fa(c.target)}</b></div>`;
 if(net==='host'&&specs.length)h+='<h3>👀 تماشاچی‌ها</h3>'+specs.map((c,i)=>`<div class="srow"><span>${esc(c.nm||'')}</span><button class="new" onclick="kickSpec(${i});showSet()">✕ حذف</button></div>`).join('');
@@ -457,6 +458,7 @@ gen('📖 قوانین',`<h3>🎯 هدف</h3><p>زودتر از همه کارت�
 <div class="rr">${k('g','D')}<span><b>+۲:</b> نفر بعدی ۲ کارت می‌گیره، مگر اینکه +۲ یا +۴ روش بذاره؛ اون‌وقت جریمه جمع می‌شه.</span></div>
 <div class="rr">${k('w','W')}<span><b>جوکر:</b> روی هر کارتی میاد و رنگ رو خودت انتخاب می‌کنی.</span></div>
 <div class="rr">${k('w','F')}<span><b>+۴:</b> جوکر با ۴ کارت جریمه؛ قابل جمع شدن با +۲ و +۴ بعدی.</span></div>
+<div class="rr">${k('g','X')}<span><b>ریختن همه:</b> وقتی این کارت رو بندازی (با رنگ یا نماد هم‌خوان)، همهٔ کارت‌های هم‌رنگ اون توی دستت هم می‌ریزن.</span></div>
 <h3>📣 اونو!</h3><p>وقتی ۲ کارت داری و نوبتته، قبل از انداختن کارت دکمهٔ «اونو!» رو بزن. اگه با ۱ کارت موندی و نگفتی، بقیه می‌تونن «گرفتمش!» بزنن و ۲ کارت جریمه بگیری.</p>
 <h3>⏱️ زمان</h3><p>${fa(c.tt)} ثانیه برای هر نوبت وقت داری؛ بعدش خودکار کارت می‌کشی. حلقهٔ دور آواتار زمان باقی‌مونده رو نشون می‌ده.</p>
 <h3>🏆 امتیاز کارت‌ها</h3><p>عددها = خودشون، ⛔ ⇄ +۲ = ۲۰، جوکر و +۴ = ۵۰.</p>
@@ -466,7 +468,7 @@ const getSt=()=>{try{return Object.assign({g:0,w:0,l:0,st:0,best:0,mw:0,top:0},J
 function rec(win,p,md){const t=getSt();t.g++;if(win){t.w++;t.st++;t.best=Math.max(t.best,t.st);t.top=Math.max(t.top,p||0);if(md)t.mw++}else{t.l++;t.st=0}try{localStorage.setItem('uno-stats',JSON.stringify(t))}catch(e){}}
 function showStats(){const t=getSt(),b=(n,l)=>`<div><b>${fa(n)}</b>${l}</div>`;
 gen('📊 آمار من',`<div class="stg">${b(t.g,'دست بازی‌شده')}${b(t.g?Math.round(t.w/t.g*100):0,'درصد برد')}${b(t.w,'برد')}${b(t.l,'باخت')}${b(t.st,'برد پشت‌هم فعلی')}${b(t.best,'بهترین برد پشت‌هم')}${b(t.mw,'مسابقهٔ برده')}${b(t.top,'بیشترین امتیاز یک دست')}</div><p style="text-align:center"><button class="new" onclick="if(confirm('آمار صفر شود؟')){localStorage.removeItem('uno-stats');showStats()}">صفر کردن آمار</button></p>`)}
-try{const c=JSON.parse(localStorage.getItem('uno-cfg')||'null');if(c){TT=(+c.tt||20)*1000;TARGET=+c.target||200;BOTS=+c.bots||1}const q=JSON.parse(localStorage.getItem('uno-prefs')||'null');if(q){mute=!!q.mute;sortOn=q.sort!==false;skin=q.skin||'classic'}}catch(e){}
+try{const c=JSON.parse(localStorage.getItem('uno-cfg')||'null');if(c){TT=(+c.tt||20)*1000;TARGET=+c.target||200;BOTS=+c.bots||1;XC=c.xc!==0}const q=JSON.parse(localStorage.getItem('uno-prefs')||'null');if(q){mute=!!q.mute;sortOn=q.sort!==false;skin=q.skin||'classic'}}catch(e){}
 $('mb').style.opacity=mute?.4:1;document.body.dataset.skin=skin;
 showRj();
 const rm=new URLSearchParams(location.search).get('room');if(rm){$('code').value=rm.toUpperCase().slice(0,5);document.body.classList.add('inv');$('invb').hidden=false;$('invb').textContent='ورود به اتاق '+$('code').value}
