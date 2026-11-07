@@ -69,7 +69,7 @@ h2{margin:0;font-size:32px;color:var(--gold)}
 #mid .card{width:56px;height:84px;font-size:22px}
 .op{flex:0 0 auto;width:68px;padding:6px 4px;font-size:12px}
 .lnk{direction:ltr;background:#111;color:var(--gold);border:2px dashed var(--gold);border-radius:10px;padding:8px 12px;font-size:15px;word-break:break-all;margin:8px 0;cursor:pointer}
-.inv #choices>:not(#nm):not(#invb){display:none!important}
+.inv #choices>:not(#nm):not(#invb):not(#specb){display:none!important}
 html,body{overflow-x:hidden}
 .emo{flex-wrap:wrap;gap:4px}.emo button{font-size:18px;padding:3px 6px}
 .op{overflow:visible;text-overflow:clip}
@@ -92,21 +92,50 @@ html,body{overflow-x:hidden}
 .srow{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:6px 0;flex-wrap:wrap}
 .new.sel{background:var(--gold);color:#1a1a1a}
 .stg{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stg div{background:#ffffff14;border-radius:10px;padding:8px;text-align:center;font-size:13px}.stg b{display:block;font-size:24px;color:var(--gold)}
+.hand{display:block;position:relative;height:170px;padding:24px 0 0;gap:0;overflow-x:auto;overflow-y:hidden}
+.fan{position:relative;height:146px;margin:0 auto}
+.hand .card{position:absolute;transform-origin:50% 100%;transition:margin-bottom .12s}
+.hand .card.ok{margin-bottom:14px}
+.hand .card.ok:hover{margin-bottom:22px}
+h1{flex-wrap:nowrap}h1>span:last-child{display:flex;gap:4px}h1 .new{padding:4px 8px;font-size:14px}
+.op.mate{outline:2px solid var(--gold)}
+.hand .card.dl{animation:none}
+body[data-skin=neon]{--r:#ff4d6d;--y:#ffe14d;--g:#3dff9a;--b:#4dc3ff}
+[data-skin=neon] .card:not(.back){background:#0b0b14!important;border-width:2px;text-shadow:0 0 8px currentColor}
+[data-skin=neon] .card.r{color:var(--r);border-color:var(--r);box-shadow:0 0 10px var(--r)}
+[data-skin=neon] .card.y{color:var(--y);border-color:var(--y);box-shadow:0 0 10px var(--y)}
+[data-skin=neon] .card.g{color:var(--g);border-color:var(--g);box-shadow:0 0 10px var(--g)}
+[data-skin=neon] .card.b{color:var(--b);border-color:var(--b);box-shadow:0 0 10px var(--b)}
+[data-skin=neon] .card.w{color:#fff;border-color:#fff;box-shadow:0 0 10px #fff}
+[data-skin=neon] .card.back{filter:hue-rotate(120deg) saturate(1.5)}
+body[data-skin=pastel]{--r:#f28b82;--y:#fdd663;--g:#81c995;--b:#8ab4f8}
+[data-skin=pastel] .card:not(.back){color:#33333f;text-shadow:none;border-color:#fff}
+[data-skin=pastel] .card.back{filter:saturate(.55) brightness(1.3)}
+body[data-skin=contrast]{--r:#d55e00;--y:#f0e442;--g:#009e73;--b:#0072b2}
+[data-skin=contrast] .card::after{position:absolute;bottom:4px;left:6px;font-size:14px}
+[data-skin=contrast] .card.r::after{content:'●'}[data-skin=contrast] .card.y::after{content:'▲'}[data-skin=contrast] .card.g::after{content:'■'}[data-skin=contrast] .card.b::after{content:'◆'}
+body[data-skin=paper]{--r:#b3261e;--y:#b07800;--g:#2f7d4f;--b:#1f5fa8}
+[data-skin=paper] .card:not(.back){background:#fffaf0!important;text-shadow:none;border-radius:4px;border-width:4px}
+[data-skin=paper] .card.r{color:var(--r);border-color:var(--r)}[data-skin=paper] .card.y{color:var(--y);border-color:var(--y)}
+[data-skin=paper] .card.g{color:var(--g);border-color:var(--g)}[data-skin=paper] .card.b{color:var(--b);border-color:var(--b)}
+[data-skin=paper] .card.w{color:#333;border-color:#333}
+[data-skin=paper] .card.back{filter:sepia(.7) saturate(1.2)}
 </style>
 </head>
 <body>
 <h1><span>اونو</span><span><button class="new" id="nb" onclick="newGame()">بازی جدید</button><button class="new" onclick="showRules()">📖</button><button class="new" onclick="showStats()">📊</button><button class="new" onclick="showSet()">⚙️</button><button class="new" onclick="location.reload()">منو</button></span></h1>
 <div id="board"><div id="otop"></div><div id="oleft"></div><div id="mid"></div><div id="oright"></div></div>
 <div id="msg"></div><button class="big" id="unob" style="visibility:hidden" onclick="act('uno')">اونو!</button>
-<div class="me" id="me"><div class="hand" id="hand"></div></div><div class="row emo" id="emo"></div>
+<div class="me" id="me"><div class="hand" id="hand"></div></div><div class="row emo" id="emo"></div><div class="row" id="wrow" hidden style="flex-wrap:wrap;justify-content:center;gap:4px"></div>
 
 <div class="ov" id="menu"><h2>اونو</h2>
 <div id="choices">
 <input id="nm" placeholder="اسمت" maxlength="12" style="letter-spacing:0;text-transform:none;width:100%">
 <button class="big" id="rj" hidden onclick="join(getSess())"></button>
 <button class="big" id="invb" hidden onclick="join(getSess()&&getSess().code===$('code').value?getSess():undefined)">ورود به بازی</button>
+<button class="big" id="specb" hidden onclick="join(null,true)">👀 تماشا</button>
 <div class="row" style="justify-content:center;gap:8px"><button class="new" onclick="showRules()">📖 قوانین</button><button class="new" onclick="showStats()">📊 آمار</button><button class="new" onclick="showSet()">⚙️ تنظیمات</button></div>
-<label>تعداد بازیکن: <select id="np" style="font:inherit;padding:4px 8px;border-radius:8px"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select></label>
+<label>تعداد بازیکن: <select id="np" style="font:inherit;padding:4px 8px;border-radius:8px"><option>2</option><option>3</option><option selected>4</option><option value="T">۴ نفره — دو به دو 🤝</option><option>5</option><option>6</option></select></label>
 <button class="big" onclick="startLocal()">بازی با بات‌ها</button>
 <button class="big" onclick="host()">ساخت اتاق آنلاین</button>
 <div class="row"><input id="code" placeholder="کد اتاق" maxlength="5"><button class="big" onclick="join()">ورود</button></div>
@@ -131,7 +160,7 @@ const BACK="<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 96'><rect wi
 document.documentElement.style.setProperty('--back','url("data:image/svg+xml,'+encodeURIComponent(BACK)+'")');
 const NAMES=['تو','رضا','سارا','علی','مریم','حسین'],CN={r:'قرمز',y:'زرد',g:'سبز',b:'آبی'};
 const L={S:'⛔',R:'⇄',D:'+۲',W:'★',F:'+۴'},FA='۰۱۲۳۴۵۶۷۸۹';
-let deck,disc,hands,cur,dir,color,drew,over,winner,msg='',pending,V,timer,stack=0,unoP=-1,called=false,scores=[0,0,0,0],pts=0,matchDone=false,sortOn=true,ready=[],pre=-1,N=4,hist=[],lastMsg='',pv=null,fl={},histOn=false,lack=[],dl=0,tmo,lastCur=-1,lastHum=false,tt=1100,pname=[],tokens=[],ip,emos=['','','','','',''],et=[];
+let deck,disc,hands,cur,dir,color,drew,over,winner,msg='',pending,V,timer,stack=0,unoP=-1,called=false,scores=[0,0,0,0],pts=0,matchDone=false,sortOn=true,tapR=null,hideTop=false,skin='classic',HS=0,specs=[],snapS=null,isSpec=false,migT,migIv,tries=0,teams=false,ready=[],pre=-1,N=4,hist=[],lastMsg='',pv=null,fl={},histOn=false,lack=[],dl=0,tmo,lastCur=-1,lastHum=false,tt=1100,pname=[],tokens=[],ip,emos=['','','','','',''],et=[];
 let TT=20000,TARGET=200,BOTS=1;
 const SIGNAL={},ICE=[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'}/*,{urls:'turn:YOUR_TURN_HOST:3478',username:'USER',credential:'PASS'}*/],EM=['😂','👏','😡','😎','🤔','🔥'];
 let net='local',peer,conn,conns={},hum=new Set([0]),names=NAMES.slice(),code='',started=false;
@@ -151,13 +180,13 @@ if(!deck.length)break;hands[p].push(deck.pop())}}
 function start(r){if(r||scores.length!==N)scores=Array(N).fill(0);matchDone=false;stack=0;unoP=-1;pre=-1;ready=[];lastCur=-1;hist=[];lastMsg='';pv=null;lack=Array.from({length:N},()=>new Set());build();hands=Array.from({length:N},()=>[]);for(let p=0;p<N;p++)draw(7,p);
 const k=deck.findIndex(c=>c.c!=='w'&&!isNaN(c.v));disc=deck.splice(k,1);
 color=disc[0].c;cur=0;dir=1;drew=false;over=false;winner=-1;pending=null;started=true;
-names=NAMES.slice();names[0]=myName()||NAMES[0];hum=new Set([0]);
+names=NAMES.slice();names[HS]=myName()||NAMES[HS];hum=new Set([HS]);if(HS!==0)names[0]='بات';
 for(const s in conns){hum.add(+s);names[s]=pname[s]||'دوست '+FA[s]}
 msg='بازی شروع شد';$('menu').hidden=true;$('end').hidden=true;$('pick').hidden=true;go()}
 function play(p,i,col){const c=hands[p].splice(i,1)[0];disc.push(c);lack[p].delete(c.c);color=col||c.c;
 let t=names[p]+': '+(c.c==='w'?'جوکر، رنگ '+CN[color]:lab(c)+' '+CN[c.c]);
 if(hands[p].length===1){unoP=p;called=(!hum.has(p)&&Math.random()<.8)||pre===p;pre=-1;t+=called?' — اونو!':' — یک کارت مانده'}
-if(!hands[p].length){over=true;winner=p;msg=t;pts=hands.reduce((s,h)=>s+h.reduce((a,c)=>a+(c.c==='w'?50:isNaN(c.v)?20:+c.v),0),0);scores[p]+=pts;matchDone=scores[p]>=TARGET;return go()}
+if(!hands[p].length){over=true;winner=p;msg=t;pts=hands.reduce((s,h,i)=>s+(teams&&i%2===p%2?0:h.reduce((a,c)=>a+(c.c==='w'?50:isNaN(c.v)?20:+c.v),0)),0);scores[p]+=pts;if(teams)scores[(p+2)%4]+=pts;matchDone=scores[p]>=TARGET;return go()}
 if(c.v==='R')dir=-dir;
 let n=nx(p),skip=false;
 if(c.v==='S'||(c.v==='R'&&N===2))skip=true;
@@ -173,10 +202,12 @@ if(l&&ok(l)){drew=true;msg=names[p]+' کارت کشید'}
 else{msg=names[p]+' کارت کشید و رد شد';cur=nx(p)}}
 else{drew=false;msg=names[p]+' رد شد';cur=nx(p)}
 go()}}
-function view(s){return{hand:hands[s],counts:hands.map(h=>h.length),top:topCard(),color,cur,msg,over,winner,drew:drew&&cur===s,me:s,names,stack,uno:unoP>=0&&!called?unoP:-1,scores,pts,matchDone,target:TARGET,cfg:{tt:TT/1000,target:TARGET,bots:BOTS},st:Array.from({length:N},(_,i)=>i===0?'h':hum.has(i)?(ready[i]?'r':'w'):'b'),n:N,dir,hist,dn:disc.length,tl:Math.max(0,dl-Date.now()),tt,pre:pre===s}}
+function view(s,w){const q=s<0?(w||0):s;return{hand:hands[q],counts:hands.map(h=>h.length),top:topCard(),color,cur,msg,over,winner,drew:drew&&cur===q,me:q,names,stack,uno:unoP>=0&&!called?unoP:-1,scores,pts,matchDone,target:TARGET,cfg:{tt:TT/1000,target:TARGET,bots:BOTS},st:Array.from({length:N},(_,i)=>i===HS?'h':hum.has(i)?(ready[i]?'r':'w'):'b'),n:N,team:teams,spec:s<0,nspec:specs.length,dir,hist,dn:disc.length,tl:Math.max(0,dl-Date.now()),tt,pre:pre===s}}
 function go(){if(msg!==lastMsg){hist.unshift(msg);hist.length=Math.min(hist.length,8);lastMsg=msg}const hh=hum.has(cur);if(over){clearTimeout(tmo);lastCur=-1}else if(cur!==lastCur||hh!==lastHum){lastCur=cur;lastHum=hh;clearTimeout(tmo);tt=hh?TT:Math.round(1100*BOTS);dl=Date.now()+tt;if(hh)tmo=setTimeout(timeUp,TT)}
-V=view(0);render();
+V=view(HS);render();
 for(const s in conns){try{conns[s].send({t:'state',v:view(+s)})}catch(e){}}
+for(const c of specs){try{c.send({t:'state',v:view(-1,c.watch)})}catch(e){}}
+if(started&&Object.keys(conns).length){const sn=JSON.stringify(engSnap());for(const s in conns){try{conns[s].send({t:'snap',s:sn})}catch(e){}}}
 clearTimeout(timer);if(!over&&!hum.has(cur))timer=setTimeout(bot,unoP>=0&&!called?(hum.has(unoP)?3500:2500):Math.round(1000*BOTS))}
 function bot(){if(over)return;const h=hands[cur],p=cur,n=nx(p);
 if(unoP>=0&&!called&&unoP!==p&&Math.random()<.6)return callUno(p);unoP=-1;
@@ -188,7 +219,7 @@ const cnt={r:0,y:0,g:0,b:0};h.forEach(c=>{if(c.c!=='w')cnt[c.c]++});
 const hot=hands[n].length<=2,allW=idx.every(j=>h[j].c==='w');
 const sc=i=>{const c=h[i];let x=Math.random();
 if(c.c==='w'){x-=hot&&c.v==='F'?-80:50;if(h.length<=2||allW)x+=50}
-else{x+=cnt[c.c]*2+(isNaN(c.v)?(hot?20:4):+c.v*.5)}
+else{x+=(teams&&c.v==='S'&&hands[(p+2)%4].length<=2?15:0)+cnt[c.c]*2+(isNaN(c.v)?(hot?20:4):+c.v*.5)}
 return x};
 let i=idx[0],best=-1e9;for(const j of idx){const v=sc(j);if(v>best){best=v;i=j}}
 let col;if(h[i].c==='w'){const k={r:0,y:0,g:0,b:0};h.forEach((c,j)=>{if(j!==i&&c.c!=='w')k[c.c]+=2});
@@ -197,46 +228,45 @@ col=Object.keys(k).sort((a,b)=>k[b]-k[a]||Math.random()-.5)[0]}
 play(p,i,col);if(Math.random()<.07)emoAll(p,EM[Math.random()*EM.length|0])}
 
 /* ---------- ورودی بازیکن ---------- */
-function act(t,i,col){if(net==='client')conn.send({t,i,col});else if(t==='uno')callUno(0);else apply(0,t,i,col)}
-function tap(i){if(!V||V.cur!==V.me||V.over)return;const h=V.hand,c=h[i];
+function act(t,i,col){if(V&&V.spec)return;if(net==='client')conn.send({t,i,col});else if(t==='uno')callUno(HS);else apply(HS,t,i,col)}
+function tap(i,el){if(V&&V.spec)return;if(!V||V.cur!==V.me||V.over)return;const h=V.hand,c=h[i];
 if(!ok(c,V.top,V.color,V.stack)||(V.drew&&i!==h.length-1))return;
+if(el){const r=el.getBoundingClientRect();tapR={x:r.left,y:r.top,w:r.width,h:r.height,t:Date.now()}}
 if(c.c==='w'){pending=i;$('pick').hidden=false}else act('play',i)}
 function chose(c){$('pick').hidden=true;act('play',pending,c);pending=null}
-function pile(){if(!V||V.cur!==V.me||V.over)return;act('pile')}
+function pile(){if(!V||V.spec||V.cur!==V.me||V.over)return;act('pile')}
 
 /* ---------- نمایش ---------- */
 function cardEl(c,extra,fn,st){return`<div class="card ${c.c} ${extra||''}" style="background:var(--${c.c});${st||''}" ${fn?`onclick="${fn}"`:''}><i class="cn">${lab(c)}</i>${lab(c)}</div>`}
 function render0(){
 const SD={2:['t'],3:['l','r'],4:['l','t','r'],5:['l','t','t','r'],6:['l','t','t','t','r']}[V.n],o={l:'',t:'',r:''};
-for(let k=1;k<V.n;k++){const p=(V.me+k)%V.n;o[SD[k-1]]+=`<div class="op ${V.cur===p&&!V.over?'on':''}">${avEl(p)}<span class="nmx">${esc(V.names[p])}</span><b>${V.counts[p]}</b>کارت</div>`}
+for(let k=1;k<V.n;k++){const p=(V.me+k)%V.n;o[SD[k-1]]+=`<div data-p="${p}" class="op ${V.cur===p&&!V.over?'on':''}${V.team&&p%2===V.me%2?' mate':''}">${avEl(p)}<span class="nmx">${V.team&&p%2===V.me%2?'🤝 ':''}${esc(V.names[p])}</span><b>${V.counts[p]}</b>کارت</div>`}
 $('oleft').innerHTML=o.l;$('otop').innerHTML=o.t;$('oright').innerHTML=o.r;
-$('mid').innerHTML=`<div class="pile"><div class="card back" onclick="pile()"></div>${V.stack>0?'بکش +'+fa(V.stack):'بکش'}</div>${cardEl(V.top,fl.fly)}<div id="col"><div id="dot" style="background:var(--${V.color})"></div>${CN[V.color]}<span>${V.dir>0?'↺':'↻'}</span></div>`;
+$('mid').innerHTML=`<div class="pile"><div class="card back" onclick="pile()"></div>${V.stack>0?'بکش +'+fa(V.stack):'بکش'}</div>${cardEl(V.top,'',null,hideTop?'visibility:hidden':'')}<div id="col"><div id="dot" style="background:var(--${V.color})"></div>${CN[V.color]}<span>${V.dir>0?'↺':'↻'}</span></div>`;
 const ord=V.hand.map((c,i)=>i);if(sortOn)ord.sort((a,b)=>sk(V.hand[a])-sk(V.hand[b]));
-const W=Math.max(200,($('hand').clientWidth||340)-8),R=Math.min(3,Math.ceil(ord.length/9)),per=Math.ceil(ord.length/R)||1;let hh='';
-for(let r=0;r<R;r++){const part=ord.slice(r*per,(r+1)*per),st=part.length>1?Math.min(70,(W-64)/(part.length-1)):0;
-hh+='<div class="hrow">'+part.map((i,j)=>{const c=V.hand[i];return cardEl(c,(V.cur===V.me&&ok(c,V.top,V.color,V.stack)&&!V.over?'ok':'no')+(V.drew&&i===V.hand.length-1?' last':'')+(fl.deal!=null&&i>=fl.deal?' dl':''),`tap(${i})`,j?`margin-inline-start:${st-64}px`:'')}).join('')+'</div>'}
-$('hand').innerHTML=hh;
+const n=ord.length,W=Math.max(220,$('hand').clientWidth||340),st=n>1?Math.max(26,Math.min(52,(W-120)/(n-1))):0,Wi=Math.max(W,st*(n-1)+120),ang=n>1?Math.min(5,36/(n-1)):0,cv=n>1?Math.min(2.2,20/(((n-1)/2)**2)):0;
+$('hand').innerHTML=`<div class="fan" style="width:${Wi}px">`+ord.map((i,j)=>{const c=V.hand[i],k=j-(n-1)/2;return cardEl(c,(V.cur===V.me&&ok(c,V.top,V.color,V.stack)&&!V.over?'ok':'no')+(V.drew&&i===V.hand.length-1?' last':'')+(fl.deal!=null&&i>=fl.deal?' dl':''),`tap(${i},this)`,`left:${(Wi/2-32-k*st).toFixed(1)}px;bottom:${(24-k*k*cv).toFixed(1)}px;transform:rotate(${(-k*ang).toFixed(1)}deg)`)}).join('')+'</div>';
 $('me').className='me'+(V.cur===V.me&&!V.over?' on':'');
 $('msg').textContent=histOn?V.hist.join('\n'):V.msg;
 $('nb').hidden=net==='client';$('again').hidden=net==='client';
 $('end').hidden=!V.over;
-$('myav').innerHTML=avEl(V.me);$('nb').hidden=net==='client';const pre2=V.cur===V.me&&V.hand.length===2&&!V.pre&&!V.over,showU=(V.uno>=0&&!V.over)||pre2;$('unob').style.visibility=showU?'visible':'hidden';$('unob').className='big'+(showU?' on':'');if(showU)$('unob').textContent=(V.uno===V.me||(pre2&&V.uno<0))?'اونو!':'گرفتمش! ('+V.names[V.uno]+')';
-if(V.over){const sc=V.scores.map((x,i)=>`<div>${esc(V.names[i])}: <b>${fa(x)}</b></div>`).join('');
-$('endt').innerHTML=(V.winner===V.me?'🎉 بردی!':esc(V.names[V.winner])+' برد')+` (+${fa(V.pts)} امتیاز)<div style="font-size:15px;margin:10px 0">${sc}<small>هدف: ${fa(V.target)}</small></div>`+(V.matchDone?`<div>🏆 برندهٔ مسابقه: ${esc(V.names[V.winner])}</div>`:'')+(net==='client'?' — منتظر میزبان…':'');
+$('myav').innerHTML=avEl(V.me);$('emo').hidden=!!V.spec;$('wrow').hidden=!V.spec;if(V.spec)$('wrow').innerHTML='<span>👀 تماشا:</span>'+V.names.map((n,i)=>`<button class="new${i===V.me?' sel':''}" onclick="watch(${i})">${esc(n)}</button>`).join('');$('nb').hidden=net==='client';const pre2=!V.spec&&V.cur===V.me&&V.hand.length===2&&!V.pre&&!V.over,showU=!V.spec&&((V.uno>=0&&!V.over)||pre2);$('unob').style.visibility=showU?'visible':'hidden';$('unob').className='big'+(showU?' on':'');if(showU)$('unob').textContent=(V.uno===V.me||(pre2&&V.uno<0))?'اونو!':'گرفتمش! ('+V.names[V.uno]+')';
+if(V.over){const sc=(V.team?[0,1]:V.scores.map((x,i)=>i)).map(i=>`<div>${V.team?esc(V.names[i])+' و '+esc(V.names[i+2]):esc(V.names[i])}: <b>${fa(V.scores[i])}</b></div>`).join('');
+$('endt').innerHTML=(V.spec?esc(V.names[V.winner])+' برد':V.team?(V.winner%2===V.me%2?'🎉 تیم شما برد!':'تیم حریف برد'):(V.winner===V.me?'🎉 بردی!':esc(V.names[V.winner])+' برد'))+` (+${fa(V.pts)} امتیاز)<div style="font-size:15px;margin:10px 0">${sc}<small>هدف: ${fa(V.target)}</small></div>`+(V.matchDone?`<div>🏆 برندهٔ مسابقه: ${esc(V.names[V.winner])}</div>`:'')+(net==='client'?' — منتظر میزبان…':'');
 $('again').textContent=V.matchDone?'شروع مسابقهٔ جدید':'شروع دست بعد';
 if(net!=='local'){const m2={h:'👑 میزبان',r:'✅ آماده',w:'⏳ منتظر',b:'🤖 بات'};$('endt').innerHTML+='<div style="font-size:14px;margin:8px 0">'+V.st.map((x,i)=>`<div>${esc(V.names[i])}: ${m2[x]}</div>`).join('')+'</div>'}
-$('again').hidden=net==='client';$('cl').hidden=net!=='client';$('rdy').hidden=!(net==='client'&&V.st[V.me]!=='r');
+$('again').hidden=net==='client';$('cl').hidden=net!=='client';$('rdy').hidden=!(net==='client'&&!V.spec&&V.st[V.me]!=='r');
 if(net==='client')$('endt').innerHTML+='<div>'+(V.st[V.me]==='r'?'✅ آماده‌ای — منتظر تأیید میزبان…':'منتظر تأیید میزبان برای شروع…')+'</div>'}}
 
 /* ---------- منو و آنلاین ---------- */
 function info(t){$('choices').hidden=true;$('info').innerHTML=t}
 function err(t){showRj();$('choices').hidden=false;$('go').hidden=true;$('info').textContent=t}
-function startLocal(){net='local';N=+$('np').value;start(1)}
+function startLocal(){net='local';HS=0;{const v=$('np').value;teams=v==='T';N=teams?4:+v}start(1)}
 const link=()=>location.origin+location.pathname+'?room='+code;
 function lobby(){let h='<div>لینک دعوت را برای دوستانت بفرست</div><div class="lnk" onclick="invite(0)">'+esc(link().replace(/^https?:\/\//,''))+'</div><div class="row" style="justify-content:center;margin:8px 0"><button class="new" onclick="invite(0)">📋 کپی لینک</button>'+(navigator.share?'<button class="new" onclick="invite(1)">📨 ارسال</button>':'')+'</div>';
-for(let i=0;i<N;i++){const x=i===0?(myName()||NAMES[0])+' (میزبان)':conns[i]?(pname[i]||'دوست '+FA[i]):'🤖 بات';
-h+=`<div style="margin:4px 0;display:flex;gap:8px;justify-content:center;align-items:center"><span class="dot" style="background:hsl(${i*80+10} 50% 38%)"></span>${esc(x)}${conns[i]?`<button class="new" onclick="kick(${i})">✕</button>`:''}</div>`}
-info(h);$('go').hidden=false}
+for(let i=0;i<N;i++){const x=i===HS?(myName()||NAMES[0])+' (میزبان)':conns[i]?(pname[i]||'دوست '+FA[i]):'🤖 بات';
+h+=`<div style="margin:4px 0;display:flex;gap:8px;justify-content:center;align-items:center"><span class="dot" style="background:hsl(${i*80+10} 50% 38%)"></span>${esc(x)}${teams?' · تیم '+(i%2?'۲':'۱'):''}${conns[i]?`<button class="new" onclick="kick(${i})">✕</button>`:''}</div>`}
+if(specs.length)h+='<div>👀 '+fa(specs.length)+' تماشاچی</div>';info(h);$('go').hidden=false}
 function invite(sh){const u=link();
 if(sh&&navigator.share)return navigator.share({title:'اونو',text:'بیا اونو بازی کنیم!',url:u}).catch(()=>{});
 if(navigator.clipboard)navigator.clipboard.writeText(u).then(()=>alert('لینک دعوت کپی شد'),()=>prompt('لینک را کپی کن',u));else prompt('لینک را کپی کن',u)}
@@ -244,32 +274,34 @@ function kick(s){const c=conns[s];if(!c)return;try{c.send({t:'kick'})}catch(e){}
 function dropSeat(s){delete conns[s];hum.delete(s);delete tokens[s];pname[s]='';ready[s]=false;names[s]=NAMES[s];if(started){msg=NAMES[s]+' (بات) جای بازیکن خارج‌شده آمد';go()}else lobby()}
 function host(){
 if(typeof mqtt==='undefined')return needPeer(host);
-net='host';N=+$('np').value;const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-code=Array.from({length:5},()=>A[Math.random()*A.length|0]).join('');
+net='host';{const v=$('np').value;teams=v==='T';N=teams?4:+v}const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+code=Array.from({length:5},()=>A[Math.random()*A.length|0]).join('');HS=0;tokens[0]=Math.random().toString(36).slice(2);try{localStorage.setItem('uno-sess',JSON.stringify({code,seat:0,token:tokens[0]}))}catch(e){}
 info('در حال ساخت اتاق…');
-peer=new Peer('uno-'+code,{...SIGNAL,config:{iceServers:ICE}});
+mk(lobby)}
+function mk(onOpen){peer=new Peer('uno-'+code,{...SIGNAL,config:{iceServers:ICE}});
 const to=setTimeout(()=>{if(!peer.open){try{peer.destroy()}catch(e){}net='local';err('اتصال به سرور واسط (PeerJS) برقرار نشد. اینترنت یا فیلترینگ را بررسی کن.')}},22000);
-peer.on('open',()=>{clearTimeout(to);lobby()});
+peer.on('open',()=>{clearTimeout(to);onOpen()});
 peer.on('error',e=>{clearTimeout(to);if(e.type==='unavailable-id'){peer.destroy();host()}else err('خطا در ساخت اتاق: '+e.type)});
-peer.on('connection',c=>{let s=0;
+peer.on('connection',c=>{let s=null;
 const full=()=>{c.send({t:'full'});setTimeout(()=>c.close(),400)};
 c.on('data',d=>{if(!d)return;
-if(!s){
+if(s===null){
 if(d.t==='rejoin'){const q=+d.seat;
-if(started&&q>=1&&q<N&&tokens[q]&&tokens[q]===d.token){const o=conns[q];if(o){delete conns[q];try{o.close()}catch(e){}}
+if(started&&q>=0&&q!==HS&&q<N&&tokens[q]&&tokens[q]===d.token){const o=conns[q];if(o){delete conns[q];try{o.close()}catch(e){}}
 s=q;pname[s]=nm(d.n);conns[s]=c;c.send({t:'seat',seat:s,token:tokens[s]});hum.add(s);names[s]=pname[s]||'دوست '+FA[s];msg=names[s]+' برگشت';go()}
 else full()}
-else if(d.t==='hello'){const f=[1,2,3,4,5].filter(x=>x<N).find(x=>!conns[x]);
-if(!f||started)full();
+else if(d.t==='hello'){if(d.spec){s=-1;c.nm=nm(d.n)||'تماشاچی';specs.push(c);c.send({t:'spec'});if(started)go();else lobby();return}const f=Array.from({length:N},(_,i)=>i).filter(x=>x!==HS).find(x=>!conns[x]);
+if(f===undefined||started)full();
 else{s=f;pname[s]=nm(d.n);tokens[s]=Math.random().toString(36).slice(2);conns[s]=c;c.send({t:'seat',seat:s,token:tokens[s]});lobby()}}
 return}
+if(s<0){if(d.t==='leave')rmSpec(c);else if(d.t==='watch'&&d.s>=0&&d.s<N){c.watch=+d.s;c.send({t:'state',v:view(-1,c.watch)})}return}
 if(d.t==='play'||d.t==='pile')apply(s,d.t,d.i,d.col);else if(d.t==='uno')callUno(s);else if(d.t==='emo')emoAll(s,d.e);else if(d.t==='ready'&&over){ready[s]=true;go()}else if(d.t==='leave')dropSeat(s)});
-c.on('close',()=>{if(!s||conns[s]!==c)return;delete conns[s];hum.delete(s);names[s]=NAMES[s];
+c.on('close',()=>{if(s===null)return;if(s<0){rmSpec(c);return}if(conns[s]!==c)return;delete conns[s];hum.delete(s);names[s]=NAMES[s];
 if(started&&!over){msg=NAMES[s]+' (بات) جای بازیکن خارج‌شده آمد';go()}else if(!started)lobby();if(started&&over)go()})})}
 function getSess(){try{return JSON.parse(localStorage.getItem('uno-sess'))}catch(e){return null}}
 function showRj(){const q=getSess();$('rj').hidden=!q;if(q)$('rj').textContent='بازگشت به اتاق '+q.code}
-function join(ss){
-if(typeof mqtt==='undefined')return needPeer(()=>join(ss));
+function join(ss,spec){$('specb').hidden=true;isSpec=!!spec;
+if(typeof mqtt==='undefined')return needPeer(()=>join(ss,spec));
 const c=ss?ss.code:$('code').value.trim().toUpperCase();if(!c)return err('کد اتاق را وارد کن');
 try{peer&&peer.destroy()}catch(e){}
 net='client';info('در حال اتصال…');
@@ -278,29 +310,34 @@ const to=setTimeout(()=>{if(!peer.open){try{peer.destroy()}catch(e){}net='local'
 peer.on('error',e=>{net='local';if(e.type==='peer-unavailable'){try{localStorage.removeItem('uno-sess')}catch(x){}}err(e.type==='peer-unavailable'?'اتاقی با این کد پیدا نشد':'خطا در اتصال: '+e.type)});
 peer.on('open',()=>{clearTimeout(to);conn=peer.connect('uno-'+c,{reliable:true});
 const t2=setTimeout(()=>{if(net==='client'&&!conn.open){net='local';try{peer.destroy()}catch(e){}err('اتصال به میزبان برقرار نشد. کد/لینک را چک کن یا از میزبان بخواه اتاق را دوباره بسازد.')}},15000);
-conn.on('open',()=>clearTimeout(t2)||conn.send(ss?{t:'rejoin',seat:ss.seat,token:ss.token,n:myName()}:{t:'hello',n:myName()}));
+conn.on('open',()=>clearTimeout(t2)||conn.send(ss?{t:'rejoin',seat:ss.seat,token:ss.token,n:myName()}:{t:'hello',n:myName(),spec:!!spec}));
 conn.on('data',d=>{
-if(d.t==='seat'){try{localStorage.setItem('uno-sess',JSON.stringify({code:c,seat:d.seat,token:d.token}))}catch(e){}info('وصل شدی ✅<br>منتظر شروع بازی توسط میزبان…')}
-else if(d.t==='full'){try{localStorage.removeItem('uno-sess')}catch(e){}net='local';err('اتاق پر است یا بازی شروع شده')}
+if(d.t==='seat'){clearTimeout(migT);clearInterval(migIv);try{localStorage.setItem('uno-sess',JSON.stringify({code:c,seat:d.seat,token:d.token}))}catch(e){}info('وصل شدی ✅<br>منتظر شروع بازی توسط میزبان…')}
+else if(d.t==='full'){try{localStorage.removeItem('uno-sess')}catch(e){}net='local';$('specb').hidden=false;err('اتاق پر است یا بازی شروع شده')}
 else if(d.t==='kick'){try{localStorage.removeItem('uno-sess')}catch(e){}net='local';err('میزبان تو را از اتاق حذف کرد')}
+else if(d.t==='spec'){isSpec=true;info('👀 به‌عنوان تماشاچی وصل شدی…')}
+else if(d.t==='snap')snapS=d.s;
 else if(d.t==='emo')showEmo(d.s,d.e);
 else if(d.t==='state'){V=d.v;dl=Date.now()+V.tl;$('menu').hidden=true;render()}});
 conn.on('close',()=>{if(net!=='client')return;net='local';$('menu').hidden=false;$('end').hidden=true;err('ارتباط با میزبان قطع شد');
-if(getSess())setTimeout(()=>{if(net==='local'&&getSess())join(getSess())},1500)})})}
+if(!isSpec&&snapS&&V){try{const sn=JSON.parse(snapS),cand=sn.hum.filter(x=>x!==sn.HS).sort((a,b)=>a-b),r=cand.indexOf(V.me);if(r>=0)migT=setTimeout(takeOver,3000+r*8000)}catch(e){}}
+if(!isSpec&&getSess()){tries=0;clearInterval(migIv);const rt=()=>{if(net==='local'&&getSess()&&++tries<12)join(getSess());else if(net!=='local')clearInterval(migIv)};setTimeout(rt,1500);migIv=setInterval(rt,6000)}})})}
 
 const esc=x=>String(x).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
 const nm=x=>String(x||'').trim().slice(0,12),myName=()=>nm($('nm').value);
 function avEl(p){const on=V.cur===p&&!V.over,rem=Math.max(0,dl-Date.now());
 return`<div class="av${on?' tick':''}" ${on?`style="animation-duration:${V.tt}ms;animation-delay:${rem-V.tt}ms"`:''}>${emos[p]?`<i class="bub" style="background:hsl(${p*80+10} 50% 38%)">${emos[p]}</i>`:''}<span style="background:hsl(${p*80+10} 50% 38%)">${esc([...V.names[p]][0]||'?')}</span></div>`}
 function timeUp(){if(over||!hum.has(cur))return;const p=cur;apply(p,'pile');if(!over&&cur===p&&hum.has(p))apply(p,'pile')}
-function render(){fx();render0();pv=snap()}
-const snap=()=>({k:V.dn+V.top.c+V.top.v,col:V.color,hl:V.hand.length,cur:V.cur,uno:V.uno,over:V.over});
+function render(){fx();render0();doFx();pv=snap()}
+const snap=()=>({k:V.dn+V.top.c+V.top.v,col:V.color,hl:V.hand.length,cn:V.counts.slice(),me:V.me,cur:V.cur,uno:V.uno,over:V.over});
 function fx(){fl={};const p=pv;if(!p)return;
-if(V.dn+V.top.c+V.top.v!==p.k||V.color!==p.col){fl.fly=p.cur===V.me?'fm':'fo';sfx('play')}
-if(V.hand.length>p.hl){fl.deal=p.hl;sfx('draw')}
-if(V.cur===V.me&&p.cur!==V.me&&!V.over)sfx('turn');
+if(p.over&&!V.over)return;
+if(V.dn+V.top.c+V.top.v!==p.k||V.color!==p.col){fl.fly=1;fl.src=p.cur;sfx('play')}
+fl.od=[];V.counts.forEach((n,i)=>{if(i!==V.me&&p.cn&&n>p.cn[i]&&!V.over)fl.od.push({i,n:n-p.cn[i]})});
+if(V.hand.length>p.hl&&p.me===V.me){fl.deal=p.hl;sfx('draw')}
+if(!V.spec&&V.cur===V.me&&p.cur!==V.me&&!V.over)sfx('turn');
 if(V.uno>=0&&p.uno<0)sfx('uno');
-if(V.over&&!p.over){sfx(V.winner===V.me?'win':'lose');rec(V.winner===V.me,V.pts,V.matchDone)}}
+if(V.over&&!p.over){const w=V.team?V.winner%2===V.me%2:V.winner===V.me;if(!V.spec){sfx(w?'win':'lose');rec(w,V.pts,V.matchDone)}}}
 let ac,mute=false;
 function tone(f,d,t='sine',v=.15,w=0){if(mute||!ac)return;const o=ac.createOscillator(),g=ac.createGain(),t0=ac.currentTime+w;o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,t0);g.gain.exponentialRampToValueAtTime(.001,t0+d);o.connect(g);g.connect(ac.destination);o.start(t0);o.stop(t0+d)}
 const SFX={play:()=>tone(520,.08,'triangle'),draw:()=>tone(300,.1),turn:()=>{tone(660,.1);tone(880,.12,'sine',.15,.1)},uno:()=>{tone(700,.1,'square',.08);tone(1000,.15,'square',.08,.1)},win:()=>[523,659,784,1047].forEach((f,i)=>tone(f,.25,'triangle',.15,i*.12)),lose:()=>[400,330,260].forEach((f,i)=>tone(f,.25,'sine',.15,i*.15))};
@@ -314,8 +351,8 @@ if(over||unoP<0||called)return;
 if(s===unoP){called=true;msg=names[s]+': اونو!'}
 else{draw(2,unoP);msg=names[s]+' '+names[unoP]+' را گرفت — ۲ کارت جریمه';unoP=-1}go()}
 function showEmo(s,e){emos[s]=e;if(V)render();clearTimeout(et[s]);et[s]=setTimeout(()=>{emos[s]='';if(V)render()},2500)}
-function emoAll(s,e){if(!EM.includes(e))return;showEmo(s,e);for(const k in conns){try{conns[k].send({t:'emo',s,e})}catch(x){}}}
-function react(e){if(net==='client')conn.send({t:'emo',e});else emoAll(0,e)}
+function emoAll(s,e){if(!EM.includes(e))return;showEmo(s,e);for(const k in conns){try{conns[k].send({t:'emo',s,e})}catch(x){}}for(const c of specs){try{c.send({t:'emo',s,e})}catch(x){}}}
+function react(e){if(net==='client')conn.send({t:'emo',e});else emoAll(HS,e)}
 $('emo').innerHTML='<span id="myav"></span>'+EM.map(e=>`<button onclick="react('${e}')">${e}</button>`).join('')+'<button onclick="togSort()">🎨</button><button onclick="histOn=!histOn;render()">📜</button><button id="mb" onclick="togMute()">🔊</button>';
 try{$('nm').value=localStorage.getItem('uno-name')||''}catch(e){}
 $('nm').oninput=()=>{try{localStorage.setItem('uno-name',$('nm').value)}catch(e){}};
@@ -361,8 +398,40 @@ const t=()=>{const sc=document.createElement('script');sc.src=U[i];sc.onload=()=
 sc.onerror=()=>{sc.remove();if(++i<U.length)t();else if(!quiet)err('برای بازی آنلاین اینترنت لازم است')};document.head.appendChild(sc)};t()}
 addEventListener('resize',()=>{if(V){fl={};render0()}});
 addEventListener('load',()=>setTimeout(()=>needPeer(null,true),800));
+function engSnap(){return{N,teams,deck,disc,hands,cur,dir,color,drew,over,winner,stack,unoP,called,pre,scores,pts,matchDone,hist,names,pname:Array.from(pname,x=>x||''),tokens:Array.from(tokens,x=>x||''),ready:Array.from(ready,x=>!!x),lack:lack.map(x=>[...x]),TT,TARGET,BOTS,code,HS,hum:[...new Set([...hum,...Object.keys(conns).map(Number)])]}}
+function takeOver(){if(net==='host'||!snapS||isSpec)return;let sn;try{sn=JSON.parse(snapS)}catch(e){return}
+clearTimeout(migT);clearInterval(migIv);if(!V)return;const me=V.me;
+try{peer&&peer.destroy()}catch(e){}conn=null;
+N=sn.N;teams=sn.teams;deck=sn.deck;disc=sn.disc;hands=sn.hands;cur=sn.cur;dir=sn.dir;color=sn.color;drew=sn.drew;over=sn.over;winner=sn.winner;stack=sn.stack;unoP=sn.unoP;called=sn.called;pre=sn.pre;scores=sn.scores;pts=sn.pts;matchDone=sn.matchDone;hist=sn.hist;lastMsg='';names=sn.names;pname=sn.pname;tokens=sn.tokens;ready=sn.ready;lack=sn.lack.map(a=>new Set(a));TT=sn.TT;TARGET=sn.TARGET;BOTS=sn.BOTS;code=sn.code;
+HS=me;started=true;net='host';conns={};specs=[];hum=new Set([HS]);lastCur=-1;pv=null;
+if(!tokens[sn.HS])tokens[sn.HS]=Math.random().toString(36).slice(2);
+msg='👑 '+names[HS]+' میزبان جدید شد';$('menu').hidden=true;
+mk(()=>go())}
+function rmSpec(c){specs=specs.filter(x=>x!==c);if(!started)lobby()}
+function kickSpec(i){const c=specs[i];if(!c)return;try{c.send({t:'kick'})}catch(e){}setTimeout(()=>c.close(),300);specs.splice(i,1)}
+addEventListener('pagehide',()=>{if(net==='host'&&peer)try{peer.destroy()}catch(e){}});
+function fly(d,r0,done){const r1=d.getBoundingClientRect();if(!r1.width)return;d.style.visibility='hidden';const c=d.cloneNode(true);c.classList.add('flyc');
+c.style.cssText+=`;position:fixed;left:${r1.left}px;top:${r1.top}px;width:${r1.width}px;height:${r1.height}px;margin:0;z-index:60;visibility:visible;pointer-events:none;transition:none;transform:translate(${r0.x+r0.w/2-r1.left-r1.width/2}px,${r0.y+r0.h/2-r1.top-r1.height/2}px) scale(${r0.w/r1.width})`;
+document.body.appendChild(c);c.getBoundingClientRect();
+c.style.transition='transform .45s cubic-bezier(.2,.8,.25,1)';c.style.transform='none';
+const end=()=>{if(!c.parentNode)return;c.remove();d.style.visibility='';done&&done()};c.addEventListener('transitionend',end);setTimeout(end,700)}
+function doFx(){if(!pv||typeof document.querySelector!=='function')return;
+if(typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+const pile=document.querySelector('#mid .card.back'),pr=pile&&pile.getBoundingClientRect();
+if(fl.fly){const d=document.querySelector('#mid .card:not(.back)');
+if(d){let r0=null;if(fl.src===V.me&&tapR&&!V.spec&&Date.now()-tapR.t<8000)r0=tapR;
+else{const e=fl.src===V.me?$('hand'):document.querySelector('.op[data-p="'+fl.src+'"]'),b=e&&e.getBoundingClientRect();r0=b?{x:b.left+b.width/2-28,y:b.top+b.height/2-42,w:56,h:84}:{x:innerWidth/2-28,y:-90,w:56,h:84}}
+tapR=null;hideTop=true;fly(d,r0,()=>{hideTop=false})}}
+if(fl.deal!=null&&pr)[...document.querySelectorAll('#hand .card.dl')].forEach((d,i)=>{d.style.visibility='hidden';setTimeout(()=>fly(d,{x:pr.left,y:pr.top,w:pr.width,h:pr.height}),i*90)});
+(fl.od||[]).forEach(o=>{const e=document.querySelector('.op[data-p="'+o.i+'"]');if(!e||!pile)return;const r=e.getBoundingClientRect();
+for(let k=0;k<Math.min(o.n,4);k++)setTimeout(()=>{const c=pile.cloneNode(true);c.classList.add('flyc');c.style.cssText+=`;position:fixed;left:${pr.left}px;top:${pr.top}px;width:${pr.width}px;height:${pr.height}px;margin:0;z-index:60;pointer-events:none;transition:none`;
+document.body.appendChild(c);c.getBoundingClientRect();c.style.transition='transform .45s ease-in,opacity .45s';c.style.transform=`translate(${r.left+r.width/2-pr.left-pr.width/2}px,${r.top+r.height/2-pr.top-pr.height/2}px) scale(.5)`;c.style.opacity='.2';setTimeout(()=>c.remove(),520)},k*90)})}
+function watch(i){if(conn)conn.send({t:'watch',s:i})}
+const SKINS=[['classic','کلاسیک'],['neon','نئون'],['pastel','پاستل'],['contrast','کنتراست'],['paper','کاغذی']];
+function skinRow(){return`<div class="srow"><span>🎴 پوستهٔ کارت</span><span>${SKINS.map(([k,t])=>`<button class="new${skin===k?' sel':''}" onclick="setSkin('${k}')">${t}</button>`).join('')}</span></div><div class="rr" style="justify-content:center">${['r','y','g','b'].map((c,i)=>cardEl({c,v:''+(i+2)},'')).join('')}${cardEl({c:'w',v:'F'},'')}</div>`}
+function setSkin(k){skin=k;document.body.dataset.skin=k;savePrefs();showSet()}
 const cfgv=()=>(net==='client'&&V&&V.cfg)||{tt:TT/1000,target:TARGET,bots:BOTS};
-const savePrefs=()=>{try{localStorage.setItem('uno-prefs',JSON.stringify({mute,sort:sortOn}))}catch(e){}};
+const savePrefs=()=>{try{localStorage.setItem('uno-prefs',JSON.stringify({mute,sort:sortOn,skin}))}catch(e){}};
 function togMute(){mute=!mute;savePrefs();$('mb').style.opacity=mute?.4:1;if(!$('gen').hidden)showSet()}
 function togSort(){sortOn=!sortOn;savePrefs();if(V){fl={};render0()}if(!$('gen').hidden)showSet()}
 function setCfg(k,v){if(net==='client')return;if(k==='tt')TT=v*1000;else if(k==='target')TARGET=v;else BOTS=v;
@@ -373,10 +442,11 @@ function gen(t,h){$('gt').textContent=t;$('gb').innerHTML=h;$('gen').hidden=fals
 function showSet(){const host=net!=='client',c=cfgv();
 const sw=(t,on,f)=>`<div class="srow"><span>${t}</span><button class="new${on?' sel':''}" onclick="${f}()">${on?'روشن':'خاموش'}</button></div>`;
 const ob=(k,v,t)=>`<button class="new${c[k]===v?' sel':''}" onclick="setCfg('${k}',${v})">${t}</button>`;
-let h='<h3>شخصی</h3>'+sw('🔊 صدا',!mute,'togMute')+sw('🎨 مرتب‌سازی کارت‌ها',sortOn,'togSort');
+let h='<h3>شخصی</h3>'+sw('🔊 صدا',!mute,'togMute')+sw('🎨 مرتب‌سازی کارت‌ها',sortOn,'togSort')+skinRow();
 if(host){h+='<h3>👑 تنظیمات میزبان</h3>'+`<div class="srow"><span>⏱️ زمان نوبت</span><span>${[10,20,30,60].map(v=>ob('tt',v,fa(v)+' ث')).join('')}</span></div><div class="srow"><span>🏆 هدف امتیاز</span><span>${[100,200,300,500].map(v=>ob('target',v,fa(v))).join('')}</span></div><div class="srow"><span>🤖 سرعت بات</span><span>${ob('bots',.6,'سریع')}${ob('bots',1,'معمولی')}${ob('bots',1.7,'آرام')}</span></div>`;
 if(net==='host'){const ks=Object.keys(conns);if(ks.length)h+='<h3>بازیکن‌ها</h3>'+ks.map(k=>`<div class="srow"><span>${esc(names[k])}</span><button class="new" onclick="kick(${k});showSet()">✕ حذف</button></div>`).join('')}}
 else h+=`<h3>تنظیمات میزبان</h3><div class="srow"><span>⏱️ زمان نوبت</span><b>${fa(c.tt)} ثانیه</b></div><div class="srow"><span>🏆 هدف امتیاز</span><b>${fa(c.target)}</b></div>`;
+if(net==='host'&&specs.length)h+='<h3>👀 تماشاچی‌ها</h3>'+specs.map((c,i)=>`<div class="srow"><span>${esc(c.nm||'')}</span><button class="new" onclick="kickSpec(${i});showSet()">✕ حذف</button></div>`).join('');
 gen('⚙️ تنظیمات',h)}
 function showRules(){const c=cfgv(),k=(a,b)=>cardEl({c:a,v:b},'');
 gen('📖 قوانین',`<h3>🎯 هدف</h3><p>زودتر از همه کارت‌هات رو تموم کن. برندهٔ هر دست امتیاز کارت‌های باقی‌ماندهٔ بقیه رو می‌گیره و اولین نفری که به ${fa(c.target)} امتیاز برسه، مسابقه رو می‌بره.</p>
@@ -390,13 +460,14 @@ gen('📖 قوانین',`<h3>🎯 هدف</h3><p>زودتر از همه کارت�
 <h3>📣 اونو!</h3><p>وقتی ۲ کارت داری و نوبتته، قبل از انداختن کارت دکمهٔ «اونو!» رو بزن. اگه با ۱ کارت موندی و نگفتی، بقیه می‌تونن «گرفتمش!» بزنن و ۲ کارت جریمه بگیری.</p>
 <h3>⏱️ زمان</h3><p>${fa(c.tt)} ثانیه برای هر نوبت وقت داری؛ بعدش خودکار کارت می‌کشی. حلقهٔ دور آواتار زمان باقی‌مونده رو نشون می‌ده.</p>
 <h3>🏆 امتیاز کارت‌ها</h3><p>عددها = خودشون، ⛔ ⇄ +۲ = ۲۰، جوکر و +۴ = ۵۰.</p>
+<h3>🤝 بازی دو به دو</h3><p>در این حالت هم‌تیمی تو روبه‌روت می‌شینه (بازیکن ۱ و ۳ یک تیم، ۲ و ۴ تیم دیگه). هر کس کارت‌هاش تموم بشه، تیمش دست رو می‌بره و امتیاز کارت‌های باقی‌ماندهٔ هر دو حریف رو می‌گیره. امتیازها تیمی جمع می‌شن.</p>
 <h3>🌐 بازی آنلاین</h3><p>میزبان اتاق رو می‌سازه و لینک رو می‌فرسته. بعد از هر دست، هر بازیکن «آماده‌ام» یا «خروج» می‌زنه و میزبان تأیید می‌کنه که دست بعد شروع بشه. اگه کسی خارج بشه، بات جاش رو می‌گیره.</p>`)}
 const getSt=()=>{try{return Object.assign({g:0,w:0,l:0,st:0,best:0,mw:0,top:0},JSON.parse(localStorage.getItem('uno-stats')||'{}'))}catch(e){return{g:0,w:0,l:0,st:0,best:0,mw:0,top:0}}};
 function rec(win,p,md){const t=getSt();t.g++;if(win){t.w++;t.st++;t.best=Math.max(t.best,t.st);t.top=Math.max(t.top,p||0);if(md)t.mw++}else{t.l++;t.st=0}try{localStorage.setItem('uno-stats',JSON.stringify(t))}catch(e){}}
 function showStats(){const t=getSt(),b=(n,l)=>`<div><b>${fa(n)}</b>${l}</div>`;
 gen('📊 آمار من',`<div class="stg">${b(t.g,'دست بازی‌شده')}${b(t.g?Math.round(t.w/t.g*100):0,'درصد برد')}${b(t.w,'برد')}${b(t.l,'باخت')}${b(t.st,'برد پشت‌هم فعلی')}${b(t.best,'بهترین برد پشت‌هم')}${b(t.mw,'مسابقهٔ برده')}${b(t.top,'بیشترین امتیاز یک دست')}</div><p style="text-align:center"><button class="new" onclick="if(confirm('آمار صفر شود؟')){localStorage.removeItem('uno-stats');showStats()}">صفر کردن آمار</button></p>`)}
-try{const c=JSON.parse(localStorage.getItem('uno-cfg')||'null');if(c){TT=(+c.tt||20)*1000;TARGET=+c.target||200;BOTS=+c.bots||1}const q=JSON.parse(localStorage.getItem('uno-prefs')||'null');if(q){mute=!!q.mute;sortOn=q.sort!==false}}catch(e){}
-$('mb').style.opacity=mute?.4:1;
+try{const c=JSON.parse(localStorage.getItem('uno-cfg')||'null');if(c){TT=(+c.tt||20)*1000;TARGET=+c.target||200;BOTS=+c.bots||1}const q=JSON.parse(localStorage.getItem('uno-prefs')||'null');if(q){mute=!!q.mute;sortOn=q.sort!==false;skin=q.skin||'classic'}}catch(e){}
+$('mb').style.opacity=mute?.4:1;document.body.dataset.skin=skin;
 showRj();
 const rm=new URLSearchParams(location.search).get('room');if(rm){$('code').value=rm.toUpperCase().slice(0,5);document.body.classList.add('inv');$('invb').hidden=false;$('invb').textContent='ورود به اتاق '+$('code').value}
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();ip=e;$('inst').hidden=false});
