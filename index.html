@@ -10,10 +10,10 @@
 <link rel="icon" href="icon.svg">
 <title>اونو</title>
 <style>
-:root{--bg:#000;--felt:#141414;--ink:#eee;--r:#d8402f;--y:#f2b705;--g:#2e9e5b;--b:#2a6fc9;--gold:#e2b04a}
-[data-theme="neon"]{--bg:#060614;--felt:#111130;--ink:#e8f4ff;--r:#ff2d78;--y:#ffe93d;--g:#35ff8a;--b:#3fa9ff;--gold:#22e6ff}
-[data-theme="candy"]{--bg:#fff5f8;--felt:#ffe9f1;--ink:#3d2033;--r:#ff5c7a;--y:#ffc53d;--g:#3ecf8e;--b:#5aa0ff;--gold:#b26bff}
-@media (prefers-color-scheme:light){:root{--bg:#f3f1ec;--felt:#e4e0d6;--ink:#161616}}
+:root{--bg:#061a14;--felt:#0d2c23;--ink:#f3efe4;--r:#cf3b30;--y:#eaa90b;--g:#23915a;--b:#2866b8;--gold:#d8b25c;--glass:rgba(255,255,255,.07);--line:rgba(255,255,255,.14);--bgimg:radial-gradient(120% 80% at 50% 0%,#14463a 0%,#0a2a21 45%,#050f0b 100%)}
+[data-theme="royal"]{--bg:#12060a;--felt:#2a0f19;--ink:#f6ecd9;--r:#c2272d;--y:#e0a526;--g:#2f8a5f;--b:#2d5aa0;--gold:#e6c274;--bgimg:radial-gradient(120% 80% at 50% 0%,#4a1424 0%,#25091a 45%,#0d0408 100%)}
+[data-theme="neon"]{--bg:#060614;--felt:#111130;--ink:#e8f4ff;--r:#ff2d78;--y:#ffe93d;--g:#35ff8a;--b:#3fa9ff;--gold:#22e6ff;--bgimg:radial-gradient(120% 80% at 50% 0%,#17164a 0%,#0a0a26 50%,#04040f 100%)}
+[data-theme="candy"]{--bg:#fff5f8;--felt:#ffe0ec;--ink:#3d2033;--r:#ff5c7a;--y:#ffc53d;--g:#3ecf8e;--b:#5aa0ff;--gold:#b26bff;--glass:rgba(255,255,255,.6);--line:rgba(120,60,100,.18);--bgimg:linear-gradient(160deg,#fff5f8,#ffe3ee 60%,#fbd5e6)}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
 body{background:var(--bg);color:var(--ink);font-family:Tahoma,"Vazirmatn",system-ui,sans-serif;display:flex;flex-direction:column;min-height:100vh;padding:12px;gap:12px}
@@ -100,6 +100,52 @@ html,body{overflow-x:hidden}
 .tslot .card{width:52px;height:78px;font-size:19px}
 #hkcnt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;pointer-events:none;text-align:center;z-index:0}
 .ov .big{font-size:20px}
+
+/* ====== طراحی جدید: شیک و مینیمال ====== */
+body{background-color:var(--bg);background-image:var(--bgimg);background-attachment:fixed;letter-spacing:.2px}
+h1{padding:2px 4px 10px;border-bottom:1px solid var(--line)}
+h1>span:first-child{font-size:26px;font-weight:900;background:linear-gradient(90deg,var(--gold),#fff6dc 50%,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:1px}
+.new{border:1px solid var(--line);background:var(--glass);color:var(--ink);border-radius:999px;backdrop-filter:blur(6px)}
+h1 .new{padding:5px 10px;font-size:14px;margin-right:4px}
+.big{background:linear-gradient(180deg,#f3d58e,var(--gold) 55%,#b58a30);color:#2a1d05;border-radius:999px;box-shadow:0 4px 14px #0007,inset 0 1px 0 #fff9;padding:11px 26px;font-weight:800}
+.big:active{transform:translateY(1px)}
+.op{background:var(--glass);border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(6px);box-shadow:0 4px 14px #0004}
+.op.on,.me.on{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 0 22px rgba(216,178,92,.35)}
+#mid{background:radial-gradient(ellipse at 50% 45%,rgba(255,255,255,.11),rgba(0,0,0,.30) 88%),var(--felt);border:1px solid var(--line);border-radius:26px;box-shadow:inset 0 0 50px #0008,0 8px 24px #0006}
+#mid::before{content:"";position:absolute;inset:8px;border:1px solid rgba(216,178,92,.30);border-radius:20px;pointer-events:none}
+.me{background:var(--glass);border:1px solid var(--line);border-radius:20px;box-shadow:0 6px 18px #0004}
+#msg{font-size:15px;opacity:.95}
+.emo button{background:var(--glass);border:1px solid var(--line);border-radius:999px;color:var(--ink)}
+.ov{background:rgba(3,10,8,.84);backdrop-filter:blur(8px)}
+#gen{background:#0b1a15}
+h2{color:var(--gold);text-shadow:0 2px 14px rgba(216,178,92,.35);font-weight:900}
+input{background:rgba(0,0,0,.38);border:1.5px solid var(--gold);border-radius:999px;color:#fff}
+.lnk{border-radius:14px}
+/* کارت اونو */
+.card{--cc:#555;width:64px;height:96px;border-radius:10px;display:block;font-size:26px;font-weight:800;color:#fff;position:relative;overflow:hidden;background:linear-gradient(155deg,rgba(255,255,255,.24),rgba(255,255,255,0) 45%,rgba(0,0,0,.26)),var(--cc);border:2.5px solid #fbfaf6;box-shadow:0 3px 9px #000a,inset 0 0 0 1px rgba(0,0,0,.25);text-shadow:none}
+.card.r{--cc:var(--r)}.card.y{--cc:var(--y)}.card.g{--cc:var(--g)}.card.b{--cc:var(--b)}.card.w{--cc:#17171d}
+.card .ovl{position:absolute;left:12%;right:12%;top:14%;bottom:14%;background:#fff;border-radius:50%;transform:rotate(-26deg);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 2px rgba(0,0,0,.07)}
+.card .ovl b{transform:rotate(26deg);color:var(--cc);font-size:1.05em;font-weight:900;line-height:1}
+.card.w .ovl{background:conic-gradient(var(--r) 0 25%,var(--y) 0 50%,var(--g) 0 75%,var(--b) 0)}
+.card.w .ovl b{color:#fff;text-shadow:0 1px 3px #000b}
+.cn,.cn2{display:block;position:absolute;font-style:normal;font-size:.5em;line-height:1;color:#fff;font-weight:800;text-shadow:0 1px 2px #0009}
+.cn{top:5px;right:6px}.cn2{bottom:5px;left:6px;transform:rotate(180deg)}
+.card.back{background:var(--back) center/cover #14305a;border:2.5px solid var(--gold)}
+.card.back .cn,.card.back .cn2,.card.back .ovl{display:none}
+/* ورق حکم */
+.card.pc{background:linear-gradient(160deg,#fffefb,#ece6d5);color:#1c1d2b;border:2.5px solid #fbfaf6;box-shadow:0 3px 9px #000a,inset 0 0 0 1px rgba(0,0,0,.18)}
+.card.pc.rd{color:#c2262d}
+.card.pc .cn,.card.pc .cn2{color:inherit;text-shadow:none;text-align:center;font-size:.6em;font-weight:900}
+.card.pc .pip{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2em}
+.card.pc .pip.fc{font-size:2.5em}
+.card.xs{width:34px;height:50px;font-size:14px;border-width:1.5px;border-radius:6px}
+.card.xs .pip,.card.xs .cn2{display:none}
+.card.xs .cn{font-size:.85em;top:3px;right:4px}
+.mwrap{display:flex;gap:8px;align-items:center}
+.mcol{display:flex;flex-direction:column;gap:3px}.mcol small{font-size:11px;opacity:.8}
+.mrow{display:flex}
+.hud{position:absolute;font-size:11px;background:rgba(0,0,0,.30);border:1px solid var(--line);border-radius:10px;padding:3px 9px;line-height:1.5;text-align:center;z-index:0;color:#fff}.hud b{font-size:13px}
+.hand .card.no{opacity:1;filter:brightness(.55) saturate(.75)}
 </style>
 </head>
 <body>
@@ -161,12 +207,12 @@ html,body{overflow-x:hidden}
 const BACK="<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 96'><rect width='64' height='96' fill='#14305a'/><rect x='3.5' y='3.5' width='57' height='89' rx='5' fill='none' stroke='#e2b04a' stroke-width='1.4'/><g transform='translate(32 48)' stroke='#e2b04a' stroke-width='1.3'><ellipse rx='21' ry='36' fill='#0f6e73'/><rect x='-14' y='-14' width='28' height='28' fill='#14305a'/><rect x='-14' y='-14' width='28' height='28' fill='#14305a' transform='rotate(45)'/><circle r='7' fill='#b83227'/><circle r='2.2' fill='#e2b04a' stroke='none'/></g><g fill='#e2b04a'><circle cx='32' cy='10' r='2.4'/><circle cx='32' cy='86' r='2.4'/><circle cx='10' cy='48' r='2'/><circle cx='54' cy='48' r='2'/></g></svg>";
 document.documentElement.style.setProperty('--back','url("data:image/svg+xml,'+encodeURIComponent(BACK)+'")');
 const NAMES=['تو','رضا','سارا','علی','مریم','حسین'],CN={r:'قرمز',y:'زرد',g:'سبز',b:'آبی'};
-const L={S:'⛔',R:'⇄',D:'+۲',W:'★',F:'+۴'},FA='۰۱۲۳۴۵۶۷۸۹';
+const L={X:'🗑️',S:'⛔',R:'⇄',D:'+۲',W:'★',F:'+۴'},FA='۰۱۲۳۴۵۶۷۸۹';
 let deck,disc,hands,cur,dir,color,drew,over,winner,msg='',pending,V,timer,stack=0,unoP=-1,called=false,scores=[0,0,0,0],pts=0,matchDone=false,sortOn=true,ready=[],pre=-1,N=4,hist=[],lastMsg='',pv=null,fl={},histOn=false,lack=[],dl=0,tmo,lastCur=-1,lastHum=false,tt=1100,pname=[],tokens=[],ip,emos=['','','','','',''],et=[],lastMove=null,spects=[],spectMode=false;
 let TT=20000,TARGET=200,BOTS=1;
 const SIGNAL={},ICE=[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'}/*,{urls:'turn:YOUR_TURN_HOST:3478',username:'USER',credential:'PASS'}*/],EM=['😂','👏','😡','😎','🤔','🔥'];
 let net='local',peer,conn,conns={},hum=new Set([0]),names=NAMES.slice(),code='',started=false;
-let GAME=null;
+let GAME=null,showMate=true;
 const $=id=>document.getElementById(id);
 const topCard=()=>disc[disc.length-1];
 const nx=p=>(p+dir+N)%N;
@@ -174,7 +220,7 @@ const ok=(c,t=topCard(),col=color,s=stack)=>s>0?(c.v==='D'||c.v==='F'):(c.c==='w
 const lab=c=>L[c.v]||FA[+c.v];
 function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}}
 function build(){deck=[];for(const c of'rygb'){for(let n=0;n<=9;n++){deck.push({c,v:''+n});if(n)deck.push({c,v:''+n})}
-for(const v of'SRD'){deck.push({c,v});deck.push({c,v})}}
+for(const v of'SRD'){deck.push({c,v});deck.push({c,v})}deck.push({c,v:'X'})}
 for(let i=0;i<4;i++){deck.push({c:'w',v:'W'});deck.push({c:'w',v:'F'})}shuf(deck)}
 function draw(n,p){for(let i=0;i<n;i++){if(!deck.length){const t=disc.pop();deck=disc;shuf(deck);disc=[t]}
 if(!deck.length)break;hands[p].push(deck.pop())}}
@@ -187,9 +233,9 @@ names[0]=myName()||NAMES[0];hum=new Set([0]);
 for(const s in conns){hum.add(+s);names[s]=pname[s]||'دوست '+FA[s]}
 msg='بازی شروع شد';$('menu').hidden=true;$('end').hidden=true;$('pick').hidden=true;go()}
 function play(p,i,col){const c=hands[p].splice(i,1)[0];
-/* قانون جدید: همهٔ کارت‌های هم‌رنگ همراهش روی میز می‌آیند */
+/* کارت ویژهٔ «ریختن همه»: با انداختنش همهٔ کارت‌های هم‌رنگِ دستت هم روی میز می‌ریزند (بدون اثر ویژه) */
 const extra=[];
-if(c.c!=='w'){for(let j=hands[p].length-1;j>=0;j--){if(hands[p][j].c===c.c)extra.push(hands[p].splice(j,1)[0])}}
+if(c.v==='X'){for(let j=hands[p].length-1;j>=0;j--){if(hands[p][j].c===c.c)extra.push(hands[p].splice(j,1)[0])}}
 extra.forEach(x=>disc.push(x));disc.push(c);
 lack[p].delete(c.c);color=col||c.c;lastMove={p,i,c};
 let t=names[p]+': '+(c.c==='w'?'جوکر، رنگ '+CN[color]:lab(c)+' '+CN[c.c]);
@@ -199,9 +245,9 @@ if(!hands[p].length){over=true;winner=p;msg=t;pts=hands.reduce((s,h)=>s+h.reduce
 let skips=0;
 if(c.v==='S')skips++;
 if(c.v==='R'){dir=-dir;if(N===2)skips++}
-for(const x of extra){if(x.v==='S')skips++;else if(x.v==='R'){dir=-dir;if(N===2)skips++}else if(x.v==='D')stack+=2;else if(x.v==='F')stack+=4}
+
 let n=nx(p);while(skips-->0)n=nx(n);
-if(c.v==='D'||c.v==='F'||extra.some(x=>x.v==='D'||x.v==='F')){t+=' ← '+names[n]+' باید '+fa(stack)+' کارت بگیرد یا +روی هم بگذارد'}
+if(c.v==='D'||c.v==='F'){t+=' ← '+names[n]+' باید '+fa(stack)+' کارت بگیرد یا +روی هم بگذارد'}
 cur=n;msg=t;drew=false;go()}
 function apply(p,t,i,col){if(over||cur!==p)return;const h=hands[p];
 if(t==='play'){const c=h[i];if(!c||!ok(c)||(drew&&i!==h.length-1))return;
@@ -229,7 +275,7 @@ const cnt={r:0,y:0,g:0,b:0};h.forEach(c=>{if(c.c!=='w')cnt[c.c]++});
 const hot=hands[n].length<=2,allW=idx.every(j=>h[j].c==='w');
 const sc=i=>{const c=h[i];let x=Math.random();
 if(c.c==='w'){x-=hot&&c.v==='F'?-80:50;if(h.length<=2||allW)x+=50}
-else{x+=cnt[c.c]*2+(isNaN(c.v)?(hot?20:4):+c.v*.5)}
+else{x+=(c.v==='X'?cnt[c.c]*4:0)+cnt[c.c]*2+(isNaN(c.v)?(hot?20:4):+c.v*.5)}
 return x};
 let i=idx[0],best=-1e9;for(const j of idx){const v=sc(j);if(v>best){best=v;i=j}}
 let col;if(h[i].c==='w'){const k={r:0,y:0,g:0,b:0};h.forEach((c,j)=>{if(j!==i&&c.c!=='w')k[c.c]+=2});
@@ -297,11 +343,16 @@ function htap(i){if(GAME!=='hokm'||HK.over||HK.phase!=='play'||HK.hturn!==0)retu
 function hopEl(p){const on=HK.phase==='play'&&HK.hturn===p&&!HK.over;
 return'<div class="op'+(on?' on':'')+'"><div class="av"><span style="background:'+(HK.hakem===p?'var(--gold);color:#222':'hsl('+(p*80+10)+' 50% 38%)')+'">'+(HK.hakem===p?'👑':HNAMES[p][0])+'</span></div><span class="nmx">'+HNAMES[p]+'</span><b>'+fa(HK.hands[p].length)+'</b>کارت</div>'}
 function hlab(c){return(c.v==='A'?'آ':c.v==='K'?'ش':c.v==='Q'?'ب':c.v==='J'?'س':fa(c.v))+' '+SUIT_SYM[c.s]}
-function hcardEl(c,extra,fn,st){return'<div class="card '+SCOL[c.s]+' '+(extra||'')+'" style="background:var(--'+SCOL[c.s]+');'+(st||'')+'" '+(fn?'onclick="'+fn+'"':'')+'><i class="cn">'+hlab(c)+'</i>'+hlab(c)+'</div>'}
+function hcardEl(c,extra,fn,st){const rd=c.s==='h'||c.s==='d',rk=hrk(c),sy=SUIT_SYM[c.s];
+return`<div class="card pc ${rd?'rd':'bk'} ${extra||''}" ${st?`style="${st}"`:''} ${fn?`onclick="${fn}"`:''}><i class="cn">${rk}<br>${sy}</i><span class="pip${'AKQJ'.includes(c.v)?' fc':''}">${sy}</span><i class="cn2">${rk}<br>${sy}</i></div>`}
+function hrk(c){return c.v==='A'?'آ':c.v==='K'?'ش':c.v==='Q'?'ب':c.v==='J'?'س':fa(c.v)}
+function hmate(){if(!showMate)return hopEl(2);const hh=HK.hands[2],ord=hh.map((c,i)=>i).sort((a,b)=>{const A=hh[a],B=hh[b],at=A.s===HK.trump?0:1,bt=B.s===HK.trump?0:1;if(at!==bt)return at-bt;if(A.s!==B.s)return SUITS.indexOf(A.s)-SUITS.indexOf(B.s);return RV[B.v]-RV[A.v]});
+return'<div class="mwrap">'+hopEl(2)+'<div class="mcol"><small>🤝 کارت‌های یار</small><div class="mrow">'+ord.map((i,j)=>hcardEl(hh[i],'xs',null,j?'margin-inline-start:-21px':'')).join('')+'</div></div></div>'}
 function hrender(){
-$('otop').innerHTML=hopEl(2);$('oleft').innerHTML=hopEl(3);$('oright').innerHTML=hopEl(1);
+$('otop').innerHTML=hmate();$('oleft').innerHTML=hopEl(3);$('oright').innerHTML=hopEl(1);
 const slotPos={0:'bottom:4px;left:50%;transform:translateX(-50%)',1:'right:4px;top:50%;transform:translateY(-50%)',2:'top:4px;left:50%;transform:translateX(-50%)',3:'left:4px;top:50%;transform:translateY(-50%)'};
-let mid='<div id="hkcnt"><div style="font-size:32px;'+(HK.trump?'color:var(--'+SCOL[HK.trump]+')':'')+'">'+(HK.trump?SUIT_SYM[HK.trump]:'🂠')+'</div><div>'+(HK.trump?SUIT_N[HK.trump]:'انتخاب حکم…')+'</div><div style="font-size:13px">پاره‌ها: ما '+fa(HK.tw[0])+' — '+fa(HK.tw[1])+' حریف</div><div style="font-size:13px">امتیاز: '+fa(HK.tp[0])+' - '+fa(HK.tp[1])+' • هدف ۷</div></div>';
+const _rd=HK.trump==='h'||HK.trump==='d';
+let mid='<div class="hud" style="top:10px;right:10px"><b style="font-size:24px;color:'+(_rd?'#ee5a52':'#fff')+'">'+(HK.trump?SUIT_SYM[HK.trump]:'🂠')+'</b><br>'+(HK.trump?SUIT_N[HK.trump]:'انتخاب حکم…')+'</div><div class="hud" style="top:10px;left:10px">پاره‌ها<br><b>'+fa(HK.tw[0])+' — '+fa(HK.tw[1])+'</b></div><div class="hud" style="bottom:10px;left:10px">امتیاز<br><b>'+fa(HK.tp[0])+' - '+fa(HK.tp[1])+'</b><br>هدف ۷</div><div class="hud" style="bottom:10px;right:10px">👑 حاکم<br><b>'+HNAMES[HK.hakem]+'</b></div>';
 for(const t of HK.trick)mid+='<div class="tslot" style="'+slotPos[t.p]+'">'+hcardEl(t.c)+'<span>'+HNAMES[t.p]+'</span></div>';
 $('mid').innerHTML=mid;
 const ord=HK.hands[0].map((c,i)=>i);
@@ -318,7 +369,7 @@ if(HK.over){$('endt').innerHTML=(HK.roundWinner===0?'🎉 تیم ما برد!':'
 $('again').textContent=HK.matchOver?'مسابقهٔ جدید':'دست بعد';$('again').hidden=false;$('cl').hidden=true}
 $('hpick').hidden=!(HK.phase==='hokm'&&HK.hakem===0)}
 function hSet(){const sw=(t,on,f)=>`<div class="srow"><span>${t}</span><button class="new${on?' sel':''}" onclick="${f}()">${on?'روشن':'خاموش'}</button></div>`;const th=curTheme();
-gen('⚙️ تنظیمات حکم',sw('🔊 صدا',!mute,'togMute')+sw('🎨 مرتب‌سازی کارت‌ها',sortOn,'togSort')+'<h3>🎨 پوسته</h3><div class="srow"><span>تم بازی</span><span>'+[['','کلاسیک'],['neon','نئون'],['candy','کارتونی']].map(([v,t])=>`<button class="new${th===v?' sel':''}" onclick="setTheme('${v}')">${t}</button>`).join('')+'</span></div>')}
+gen('⚙️ تنظیمات حکم',sw('🔊 صدا',!mute,'togMute')+sw('🎨 مرتب‌سازی کارت‌ها',sortOn,'togSort')+sw('👁️ دیدن کارت‌های هم‌تیمی',showMate,'togMate')+'<h3>🎨 پوسته</h3><div class="srow"><span>تم بازی</span><span>'+[['','شیک'],['royal','سلطنتی'],['neon','نئون'],['candy','کارتونی']].map(([v,t])=>`<button class="new${th===v?' sel':''}" onclick="setTheme('${v}')">${t}</button>`).join('')+'</span></div>')}
 const hgetSt=()=>{try{return Object.assign({g:0,w:0,l:0,mw:0},JSON.parse(localStorage.getItem('hokm-stats')||'{}'))}catch(e){return{g:0,w:0,l:0,mw:0}}};
 function hrec(win,md){const t=hgetSt();t.g++;if(win){t.w++;if(md)t.mw++}else t.l++;try{localStorage.setItem('hokm-stats',JSON.stringify(t))}catch(e){}}
 function hokmStats(){const t=hgetSt(),b=(n,l)=>`<div><b>${fa(n)}</b>${l}</div>`;
@@ -338,7 +389,8 @@ function chose(c){$('pick').hidden=true;act('play',pending,c);pending=null}
 function pile(){if(!V||V.spec||V.cur!==V.me||V.over)return;act('pile')}
 
 /* ---------- نمایش ---------- */
-function cardEl(c,extra,fn,st){return`<div class="card ${c.c} ${extra||''}" style="background:var(--${c.c});${st||''}" ${fn?`onclick="${fn}"`:''}><i class="cn">${lab(c)}</i>${lab(c)}</div>`}
+function cardInner(c){const t=lab(c);return`<i class="cn">${t}</i><span class="ovl"><b>${t}</b></span><i class="cn2">${t}</i>`}
+function cardEl(c,extra,fn,st){return`<div class="card ${c.c} ${extra||''}" ${st?`style="${st}"`:''} ${fn?`onclick="${fn}"`:''}>${cardInner(c)}</div>`}
 function render0(){
 if(V.spec){$('me').style.display='none';$('emo').style.display='none'}
 else{$('me').style.display='';$('emo').style.display=''}
@@ -368,8 +420,8 @@ function grabFly(){if(net==='client'||matchMedia('(prefers-reduced-motion: reduc
 document.querySelectorAll('#hand .card').forEach(el=>{if(r)return;const m=(el.getAttribute('onclick')||'').match(/tap\((\d+)\)/);if(m&&+m[1]===lastMove.i)r=el.getBoundingClientRect()});return r}
 function flyAnim(fr){const tops=$('mid').querySelectorAll('.card:not(.back)');const t=tops[tops.length-1];if(!t||!lastMove)return;
 const tr=t.getBoundingClientRect(),c=lastMove.c,el=document.createElement('div');
-el.className='card flyx '+c.c;el.style.cssText=`position:fixed;left:${fr.left}px;top:${fr.top}px;width:${fr.width}px;height:${fr.height}px;background:var(--${c.c});font-size:${Math.round(fr.width*.4)}px`;
-el.innerHTML=`<i class="cn">${lab(c)}</i>${lab(c)}`;document.body.appendChild(el);
+el.className='card flyx '+c.c;el.style.cssText=`position:fixed;left:${fr.left}px;top:${fr.top}px;width:${fr.width}px;height:${fr.height}px;font-size:${Math.round(fr.width*.4)}px`;
+el.innerHTML=cardInner(c);document.body.appendChild(el);
 t.style.visibility='hidden';
 el.animate([{transform:'translate(0,0) rotate(0deg)',opacity:1},{transform:`translate(${tr.left-fr.left}px,${tr.top-fr.top}px) rotate(${Math.random()*16-8}deg)`,opacity:1}],{duration:300,easing:'ease-out'}).onfinish=()=>{el.remove();t.style.visibility=''}}
 
@@ -460,7 +512,7 @@ const SFX={play:()=>tone(520,.08,'triangle'),draw:()=>tone(300,.1),turn:()=>{ton
 function sfx(n){try{SFX[n]()}catch(e){}}
 addEventListener('pointerdown',()=>{try{if(!ac)ac=new(window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){}});
 const fa=n=>String(n).replace(/\d/g,d=>FA[d]);
-const sk=c=>'rygbw'.indexOf(c.c)*20+({S:10,R:11,D:12,W:13,F:14}[c.v]??+c.v);
+const sk=c=>'rygbw'.indexOf(c.c)*20+({S:10,R:11,D:12,W:13,F:14,X:15}[c.v]??+c.v);
 function next(){if(GAME==='hokm')return hnextRound();start(matchDone)}
 function callUno(s){if(!over&&unoP<0&&s===cur&&hands[s].length===2){pre=s;msg=names[s]+': اونو!';return go()}
 if(over||unoP<0||called)return;
@@ -515,9 +567,10 @@ sc.onerror=()=>{sc.remove();if(++i<U.length)t();else if(!quiet)err('برای ب�
 addEventListener('resize',()=>{if(V){fl={};render0()}if(GAME==='hokm'&&HK.phase!=='menu')hrender()});
 addEventListener('load',()=>setTimeout(()=>needPeer(null,true),800));
 const cfgv=()=>(net==='client'&&V&&V.cfg)||{tt:TT/1000,target:TARGET,bots:BOTS};
-const savePrefs=()=>{try{localStorage.setItem('uno-prefs',JSON.stringify({mute,sort:sortOn}))}catch(e){}};
+const savePrefs=()=>{try{localStorage.setItem('uno-prefs',JSON.stringify({mute,sort:sortOn,mate:showMate}))}catch(e){}};
 function togMute(){mute=!mute;savePrefs();$('mb').style.opacity=mute?.4:1;if(!$('gen').hidden)showSet()}
 function togSort(){sortOn=!sortOn;savePrefs();if(V){fl={};render0()}if(GAME==='hokm'&&HK.phase!=='menu')hrender();if(!$('gen').hidden)showSet()}
+function togMate(){showMate=!showMate;savePrefs();if(GAME==='hokm'&&HK.phase!=='menu')hrender();if(!$('gen').hidden)showSet()}
 function curTheme(){try{return localStorage.getItem('uno-theme')||''}catch(e){return''}}
 function setTheme(t){document.documentElement.dataset.theme=t;try{localStorage.setItem('uno-theme',t)}catch(e){}if(!$('gen').hidden)showSet()}
 function setCfg(k,v){if(net==='client')return;if(k==='tt')TT=v*1000;else if(k==='target')TARGET=v;else BOTS=v;
@@ -568,7 +621,7 @@ const sw=(t,on,f)=>`<div class="srow"><span>${t}</span><button class="new${on?' 
 const ob=(k,v,t)=>`<button class="new${c[k]===v?' sel':''}" onclick="setCfg('${k}',${v})">${t}</button>`;
 let h='<h3>شخصی</h3>'+sw('🔊 صدا',!mute,'togMute')+sw('🎨 مرتب‌سازی کارت‌ها',sortOn,'togSort');
 const th=curTheme();
-h+='<h3>🎨 پوسته</h3><div class="srow"><span>تم بازی</span><span>'+[['','کلاسیک'],['neon','نئون'],['candy','کارتونی']].map(([v,t])=>`<button class="new${th===v?' sel':''}" onclick="setTheme('${v}')">${t}</button>`).join('')+'</span></div>';
+h+='<h3>🎨 پوسته</h3><div class="srow"><span>تم بازی</span><span>'+[['','شیک'],['royal','سلطنتی'],['neon','نئون'],['candy','کارتونی']].map(([v,t])=>`<button class="new${th===v?' sel':''}" onclick="setTheme('${v}')">${t}</button>`).join('')+'</span></div>';
 if(host){h+='<h3>👑 تنظیمات میزبان</h3>'+`<div class="srow"><span>⏱️ زمان نوبت</span><span>${[10,20,30,60].map(v=>ob('tt',v,fa(v)+' ث')).join('')}</span></div><div class="srow"><span>🏆 هدف امتیاز</span><span>${[100,200,300,500].map(v=>ob('target',v,fa(v))).join('')}</span></div><div class="srow"><span>🤖 سرعت بات</span><span>${ob('bots',.6,'سریع')}${ob('bots',1,'معمولی')}${ob('bots',1.7,'آرام')}</span></div>`;
 if(net==='host'){const ks=Object.keys(conns);if(ks.length)h+='<h3>بازیکن‌ها</h3>'+ks.map(k=>`<div class="srow"><span>${esc(names[k])}</span><button class="new" onclick="kick(${k});showSet()">✕ حذف</button></div>`).join('')}}
 else h+=`<h3>تنظیمات میزبان</h3><div class="srow"><span>⏱️ زمان نوبت</span><b>${fa(c.tt)} ثانیه</b></div><div class="srow"><span>🏆 هدف امتیاز</span><b>${fa(c.target)}</b></div>`;
@@ -576,13 +629,14 @@ gen('⚙️ تنظیمات',h)}
 function showRules(){if(GAME==='hokm')return hokmRules();const c=cfgv(),k=(a,b)=>cardEl({c:a,v:b},'');
 gen('📖 قوانین',`<h3>🎯 هدف</h3><p>زودتر از همه کارت‌هات رو تموم کن. برندهٔ هر دست امتیاز کارت‌های باقی‌ماندهٔ بقیه رو می‌گیره و اولین نفری که به ${fa(c.target)} امتیاز برسه، مسابقه رو می‌بره.</p>
 <h3>🃏 نوبت تو</h3><p>یک کارت هم‌رنگ یا هم‌عدد/هم‌نماد با کارت وسط بنداز. کارت نداری یا نمی‌خوای؟ از دسته بکش؛ اگه کارت کشیده‌شده بخوره می‌تونی بندازیش، وگرنه نوبت می‌ره.</p>
-<h3>🂡 قانون ریختن هم‌رنگ‌ها</h3><p>وقتی کارتی (غیر از جوکر) می‌ندازی، <b>همهٔ کارت‌های هم‌رنگِ دستت خودکار همراهش روی میز می‌آیند</b> و اثر هر کدام (رد، برعکس، +۲ و…) اعمال می‌شود!</p>
+
 <h3>✨ کارت‌های ویژه</h3>
 <div class="rr">${k('r','S')}<span><b>رد کردن:</b> نوبت نفر بعدی می‌سوزه.</span></div>
 <div class="rr">${k('b','R')}<span><b>برعکس:</b> جهت بازی عوض می‌شه (در بازی ۲ نفره مثل رد کردنه).</span></div>
 <div class="rr">${k('g','D')}<span><b>+۲:</b> نفر بعدی ۲ کارت می‌گیره، مگر اینکه +۲ یا +۴ روش بذاره؛ اون‌وقت جریمه جمع می‌شه.</span></div>
 <div class="rr">${k('w','W')}<span><b>جوکر:</b> روی هر کارتی میاد و رنگ رو خودت انتخاب می‌کنی.</span></div>
 <div class="rr">${k('w','F')}<span><b>+۴:</b> جوکر با ۴ کارت جریمه؛ قابل جمع شدن با +۲ و +۴ بعدی.</span></div>
+<div class="rr">${k('g','X')}<span><b>ریختن همه:</b> وقتی این کارت رو بندازی (با رنگ یا نماد هم‌خوان)، همهٔ کارت‌های هم‌رنگ اون توی دستت هم کنارش روی میز می‌ریزن؛ بدون اثر ویژه. اگه دستت خالی بشه، می‌بری!</span></div>
 <h3>📣 اونو!</h3><p>وقتی ۲ کارت داری و نوبتته، قبل از انداختن کارت دکمهٔ «اونو!» رو بزن. اگه با ۱ کارت موندی و نگفتی، بقیه می‌تونن «گرفتمش!» بزنن و ۲ کارت جریمه بگیری.</p>
 <h3>⏱️ زمان</h3><p>${fa(c.tt)} ثانیه برای هر نوبت وقت داری؛ بعدش خودکار کارت می‌کشی. حلقهٔ دور آواتار زمان باقی‌مونده رو نشون می‌ده.</p>
 <h3>🏆 امتیاز کارت‌ها</h3><p>عددها = خودشون، ⛔ ⇄ +۲ = ۲۰، جوکر و +۴ = ۵۰.</p>
@@ -591,7 +645,7 @@ const getSt=()=>{try{return Object.assign({g:0,w:0,l:0,st:0,best:0,mw:0,top:0},J
 function rec(win,p,md){const t=getSt();t.g++;if(win){t.w++;t.st++;t.best=Math.max(t.best,t.st);t.top=Math.max(t.top,p||0);if(md)t.mw++}else{t.l++;t.st=0}try{localStorage.setItem('uno-stats',JSON.stringify(t))}catch(e){}}
 function showStats(){if(GAME==='hokm')return hokmStats();const t=getSt(),b=(n,l)=>`<div><b>${fa(n)}</b>${l}</div>`;
 gen('📊 آمار من',`<div class="stg">${b(t.g,'دست بازی‌شده')}${b(t.g?Math.round(t.w/t.g*100):0,'درصد برد')}${b(t.w,'برد')}${b(t.l,'باخت')}${b(t.st,'برد پشت‌هم فعلی')}${b(t.best,'بهترین برد پشت‌هم')}${b(t.mw,'مسابقهٔ برده')}${b(t.top,'بیشترین امتیاز یک دست')}</div><p style="text-align:center"><button class="new" onclick="if(confirm('آمار صفر شود؟')){localStorage.removeItem('uno-stats');showStats()}">صفر کردن آمار</button></p>`)}
-try{const c=JSON.parse(localStorage.getItem('uno-cfg')||'null');if(c){TT=(+c.tt||20)*1000;TARGET=+c.target||200;BOTS=+c.bots||1}const q=JSON.parse(localStorage.getItem('uno-prefs')||'null');if(q){mute=!!q.mute;sortOn=q.sort!==false}}catch(e){}
+try{const c=JSON.parse(localStorage.getItem('uno-cfg')||'null');if(c){TT=(+c.tt||20)*1000;TARGET=+c.target||200;BOTS=+c.bots||1}const q=JSON.parse(localStorage.getItem('uno-prefs')||'null');if(q){mute=!!q.mute;sortOn=q.sort!==false;showMate=q.mate!==false}}catch(e){}
 try{const th=localStorage.getItem('uno-theme');if(th)document.documentElement.dataset.theme=th}catch(e){}
 $('mb').style.opacity=mute?.4:1;
 showRj();
